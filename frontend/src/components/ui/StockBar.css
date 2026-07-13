@@ -1,0 +1,35 @@
+/* StockBar.css */
+.stock-bar { display: flex; flex-direction: column; gap: 5px; min-width: 130px; }
+
+.stock-bar__track {
+  height: 8px;
+  background: var(--border);
+  border-radius: 99px;
+  overflow: hidden;
+}
+.stock-bar__fill {
+  height: 100%;
+  border-radius: 99px;
+  transition: width 0.4s ease, background 0.3s ease;
+}
+.stock-bar__fill--optimo   { background: var(--green); }
+.stock-bar__fill--moderado { background: #EAB308; }
+.stock-bar__fill--alerta   { background: var(--orange); }
+.stock-bar__fill--critico  { background: var(--red); animation: parpadeo 1s infinite; }
+
+@keyframes parpadeo {
+  0%,100% { opacity: 1; }
+  50%      { opacity: 0.4; }
+}
+
+.stock-bar__meta {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+.stock-bar__label { font-size: 11px; font-weight: 600; }
+.stock-bar__label--optimo   { color: var(--green); }
+.stock-bar__label--moderado { color: #EAB308; }
+.stock-bar__label--alerta   { color: var(--orange); }
+.stock-bar__label--critico  { color: var(--red); }
+.stock-bar__nums { font-size: 11px; color: var(--text-muted); }

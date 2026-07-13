@@ -1,0 +1,93 @@
+/* Reportes.css */
+.rep-filtros {
+  display: flex;
+  gap: 14px;
+  align-items: flex-end;
+  flex-wrap: wrap;
+  margin-bottom: 24px;
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: 12px;
+  padding: 20px;
+}
+.rep-filtros .form-field { flex: 1; min-width: 160px; }
+.rep-filtros__btn { align-self: flex-end; height: 42px; padding: 0 24px; }
+
+.rep-kpis {
+  display: flex;
+  gap: 14px;
+  margin-bottom: 18px;
+  flex-wrap: wrap;
+}
+.rep-kpi {
+  flex: 1; min-width: 140px;
+  background: var(--card);
+  border: 1px solid var(--border);
+  border-radius: 10px;
+  padding: 16px 20px;
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+.rep-kpi--green { border-color: rgba(34,197,94,.35); }
+.rep-kpi--red   { border-color: rgba(239,68,68,.35); }
+.rep-kpi__val {
+  font-family: var(--font-display);
+  font-size: 30px; font-weight: 800;
+}
+.rep-kpi--green .rep-kpi__val { color: var(--green); }
+.rep-kpi--red   .rep-kpi__val { color: var(--red); }
+.rep-kpi__lbl { font-size: 12px; color: var(--text-muted); }
+
+.rep-export {
+  display: flex;
+  gap: 10px;
+  margin-bottom: 16px;
+  justify-content: flex-end;
+}
+
+.rep-motivo { font-size: 13px; max-width: 200px; }
+.rep-sin-motivo { color: var(--text-muted); font-style: italic; font-size: 12px; }
+.dash-diario {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: 14px;
+  padding: 22px;
+  margin-bottom: 28px;
+}
+.dash-diario__titulo {
+  font-family: var(--font-display);
+  font-size: 19px; font-weight: 700;
+  margin-bottom: 16px;
+}
+.dash-diario__kpis {
+  display: flex; gap: 12px; flex-wrap: wrap;
+  margin-bottom: 20px;
+}
+.dash-diario__kpi {
+  flex: 1; min-width: 120px;
+  background: var(--card);
+  border: 1px solid var(--border);
+  border-radius: 10px;
+  padding: 14px 18px;
+  display: flex; flex-direction: column; gap: 4px;
+}
+.dash-diario__kpi--green { border-color: rgba(34,197,94,.3); }
+.dash-diario__kpi--red   { border-color: rgba(239,68,68,.3); }
+.dash-diario__val {
+  font-family: var(--font-display);
+  font-size: 32px; font-weight: 800;
+}
+.dash-diario__kpi--green .dash-diario__val { color: var(--green); }
+.dash-diario__kpi--red   .dash-diario__val { color: var(--red); }
+.dash-diario__lbl { font-size: 12px; color: var(--text-muted); }
+.dash-diario__subtitulo {
+  font-size: 13px; font-weight: 600;
+  color: var(--text-muted); margin-bottom: 10px;
+  text-transform: uppercase; letter-spacing: .5px;
+}
+.dash-diario__tabla-wrap { overflow-x: auto; }
+.dash-diario__vacio {
+  text-align: center; color: var(--text-muted);
+  font-size: 14px; padding: 20px 0;
+}

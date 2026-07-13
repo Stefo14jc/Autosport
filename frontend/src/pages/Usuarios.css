@@ -1,0 +1,10 @@
+/* Usuarios.css */
+.usr-subtitle { font-size: 15px; color: var(--text-muted); font-weight: 400; }
+.usr-form { display: flex; flex-direction: column; gap: 14px; }
+.rol-badge {
+  display: inline-block; padding: 3px 10px;
+  border-radius: 20px; font-size: 12px; font-weight: 600;
+  text-transform: capitalize;
+}
+.rol-badge--admin     { background: rgba(249,115,22,.15); color: var(--orange); }
+.rol-badge--bodeguero { background: rgba(99,102,241,.15); color: #818CF8; }

@@ -1,0 +1,30 @@
+/* Dashboard.css */
+.dash-kpis {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+  gap: 16px;
+  margin-bottom: 28px;
+}
+.kpi-card {
+  background: var(--card);
+  border: 1px solid var(--border);
+  border-radius: 12px;
+  padding: 24px 20px;
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  transition: border-color var(--transition);
+}
+.kpi-card:hover { border-color: var(--orange); }
+.kpi-card--alert { border-color: rgba(239,68,68,.3); }
+.kpi-card--alert:hover { border-color: var(--red); }
+.kpi-card__icon { font-size: 32px; }
+.kpi-card__value { font-family: var(--font-display); font-size: 36px; font-weight: 800; }
+.kpi-card__label { font-size: 13px; color: var(--text-muted); margin-top: 2px; }
+
+.dash-section__title {
+  font-family: var(--font-display);
+  font-size: 18px; font-weight: 700;
+  margin-bottom: 14px;
+}
+.dash-table-wrap { overflow-x: auto; }

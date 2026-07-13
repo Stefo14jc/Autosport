@@ -1,0 +1,144 @@
+/* ScanView.css */
+.scan-view {
+  min-height: 100vh;
+  background: #0A0A0A;
+  display: flex;
+  flex-direction: column;
+  font-family: 'Inter', sans-serif;
+}
+
+.scan-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 16px 20px;
+  border-bottom: 1px solid #1f1f1f;
+}
+.scan-header__logo {
+  font-family: 'Barlow Condensed', sans-serif;
+  font-size: 20px; font-weight: 800;
+  letter-spacing: 1px; color: #f5f5f5;
+}
+.scan-header__logo span { color: #F97316; }
+.scan-header__tag {
+  font-size: 11px; color: #6b7280;
+  background: #1a1a1a;
+  padding: 4px 10px; border-radius: 20px;
+  border: 1px solid #2a2a2a;
+}
+
+.scan-main { flex: 1; padding: 20px 16px; display: flex; justify-content: center; }
+
+.scan-card {
+  width: 100%; max-width: 440px;
+  background: #111111;
+  border: 1px solid #2a2a2a;
+  border-radius: 20px;
+  padding: 24px 22px;
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+}
+
+.scan-card__top { display: flex; gap: 8px; align-items: center; flex-wrap: wrap; }
+.scan-badge-codigo {
+  background: rgba(249,115,22,.15);
+  color: #F97316;
+  padding: 4px 12px; border-radius: 20px;
+  font-size: 12px; font-weight: 700; letter-spacing: .5px;
+}
+.scan-badge-cat {
+  background: #1a1a1a;
+  color: #9ca3af;
+  padding: 4px 12px; border-radius: 20px;
+  font-size: 12px;
+}
+
+.scan-nombre {
+  font-family: 'Barlow Condensed', sans-serif;
+  font-size: 28px; font-weight: 800;
+  color: #f5f5f5; line-height: 1.1;
+}
+.scan-desc { font-size: 13px; color: #6b7280; line-height: 1.5; }
+
+.scan-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 12px;
+}
+.scan-dato {
+  background: #1a1a1a;
+  border: 1px solid #2a2a2a;
+  border-radius: 12px;
+  padding: 14px;
+  display: flex;
+  gap: 10px;
+  align-items: flex-start;
+}
+.scan-dato__icon { font-size: 20px; margin-top: 1px; }
+.scan-dato__label { font-size: 11px; color: #6b7280; margin-bottom: 4px; }
+.scan-dato__valor { font-size: 15px; font-weight: 700; color: #f5f5f5; }
+.scan-dato__valor--precio { color: #F97316; font-size: 18px; }
+
+.scan-stock {
+  background: #1a1a1a;
+  border: 1px solid #2a2a2a;
+  border-radius: 14px;
+  padding: 18px;
+}
+.scan-stock__header {
+  display: flex; justify-content: space-between;
+  align-items: center; margin-bottom: 8px;
+}
+.scan-stock__label { font-size: 12px; color: #6b7280; }
+.scan-stock__estado { font-size: 12px; font-weight: 700; }
+.scan-stock__numero {
+  font-family: 'Barlow Condensed', sans-serif;
+  font-size: 52px; font-weight: 800;
+  line-height: 1; margin-bottom: 12px;
+}
+.scan-stock__unidad { font-size: 20px; font-weight: 500; color: #9ca3af; }
+.scan-stock__track {
+  height: 10px; background: #2a2a2a;
+  border-radius: 99px; overflow: hidden; margin-bottom: 8px;
+}
+.scan-stock__fill {
+  height: 100%; border-radius: 99px;
+  transition: width .5s ease;
+}
+.scan-stock__minimo { font-size: 11px; color: #6b7280; }
+
+.scan-footer {
+  text-align: center; padding: 16px;
+  font-size: 11px; color: #374151;
+  border-top: 1px solid #1a1a1a;
+}
+
+.scan-loading {
+  min-height: 100vh; background: #0A0A0A;
+  display: flex; flex-direction: column;
+  align-items: center; justify-content: center;
+  gap: 16px; color: #6b7280;
+}
+.scan-loading__spinner {
+  width: 40px; height: 40px;
+  border: 3px solid #2a2a2a;
+  border-top-color: #F97316;
+  border-radius: 50%;
+  animation: spin .7s linear infinite;
+}
+@keyframes spin { to { transform: rotate(360deg); } }
+
+.scan-error {
+  min-height: 100vh; background: #0A0A0A;
+  display: flex; flex-direction: column;
+  align-items: center; justify-content: center;
+  gap: 12px; color: #f5f5f5; text-align: center;
+}
+.scan-error__icon { font-size: 48px; }
+.scan-error p { color: #6b7280; font-size: 14px; }
+
+@media (max-width: 400px) {
+  .scan-grid { grid-template-columns: 1fr; }
+  .scan-nombre { font-size: 24px; }
+}

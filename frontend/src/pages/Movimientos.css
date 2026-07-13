@@ -1,0 +1,26 @@
+/* Movimientos.css */
+.mov-meta { font-size: 13px; color: var(--text-muted); margin-bottom: 14px; }
+.mov-fecha { font-size: 12px; color: var(--text-muted); white-space: nowrap; }
+.mov-cantidad { font-weight: 700; font-size: 15px; }
+.mov-qr-tag {
+  display: inline-block;
+  padding: 2px 8px;
+  background: rgba(249,115,22,.15);
+  color: var(--orange);
+  border-radius: 4px;
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: .5px;
+}
+.mov-pagination { display: flex; gap: 6px; margin-top: 18px; flex-wrap: wrap; }
+.mov-page-btn {
+  width: 34px; height: 34px;
+  background: var(--card);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  color: var(--text);
+  font-size: 13px;
+  transition: all var(--transition);
+}
+.mov-page-btn:hover { border-color: var(--orange); color: var(--orange); }
+.mov-page-btn--active { background: var(--orange); border-color: var(--orange); color: #fff; }
