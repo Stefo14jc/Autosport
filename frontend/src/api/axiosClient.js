@@ -28,7 +28,8 @@ api.interceptors.request.use(cfg => {
 api.interceptors.response.use(
   r => r,
   err => {
-    if (err.response?.status === 401) {
+    // 👇 CORRECCIÓN: Solo sacamos al usuario si NO está en el login
+    if (err.response?.status === 401 && window.location.pathname !== '/login') {
       localStorage.removeItem('as_token')
       localStorage.removeItem('as_user')
       window.location.href = '/login'
