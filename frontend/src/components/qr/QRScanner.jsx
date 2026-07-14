@@ -63,7 +63,6 @@ export default function QRScanner({ onScanned }) {
 
       {estado === 'idle' && (
         <div className="qrscanner__idle">
-          <span className="qrscanner__cam-icon">📷</span>
           <p>Presiona el botón para activar la cámara y escanear el código QR del accesorio.</p>
           <button className="btn btn--primary" onClick={iniciar}>Activar Cámara</button>
         </div>

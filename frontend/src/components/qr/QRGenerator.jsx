@@ -64,7 +64,7 @@ export default function QRGenerator({ accesorio }) {
       <div className="qrgen__info">
         <p className="qrgen__nombre">{accesorio.nombre}</p>
         <p className="qrgen__codigo">{accesorio.codigo}</p>
-        {accesorio.ubicacion && <p className="qrgen__ubicacion">📍 {accesorio.ubicacion}</p>}
+        {accesorio.ubicacion && <p className="qrgen__ubicacion">{accesorio.ubicacion}</p>}
       </div>
       <div className="qrgen__actions">
         <button className="btn btn--ghost" onClick={handleDescargar}>⬇ Descargar QR</button>
