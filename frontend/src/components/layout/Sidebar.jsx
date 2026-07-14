@@ -89,22 +89,24 @@ export default function Sidebar() {
         />
       )}
 
-      <aside
-        style={{
-          position: 'fixed',
-          top: 0,
-          left: 0,
-          height: '100vh',
-          width: '280px',
-          background: 'var(--surface)',
-          borderRight: '1px solid var(--border)',
-          display: 'flex',
-          flexDirection: 'column',
-          zIndex: 120,
-          transform: open ? 'translateX(0)' : 'translateX(-100%)',
-          transition: 'transform 0.28s ease',
-          overflowY: 'auto',
-        }}
+<aside
+  style={{
+    position: 'fixed',
+    top: 0,
+    left: 0,
+    height: '100vh',
+    width: '280px',
+    background: 'var(--surface)',
+    borderRight: '1px solid var(--border)',
+    display: 'flex',
+    flexDirection: 'column',
+    justifyContent: 'space-between',  
+    zIndex: 120,
+    transform: open ? 'translateX(0)' : 'translateX(-100%)',
+    transition: 'transform 0.28s ease',
+    overflowY: 'auto',
+  }}
+
       >
         <button
           onClick={() => setOpen(false)}
