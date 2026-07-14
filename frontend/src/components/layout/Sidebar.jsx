@@ -1,31 +1,36 @@
-import { NavLink, useNavigate } from 'react-router-dom'
+import { useState, useEffect } from 'react'
+import { NavLink, useNavigate, useLocation } from 'react-router-dom'
 import { useAuth } from '../../context/AuthContext'
+import LogoCarro from '../../pages/LogoCarro'
 import './Sidebar.css'
-import LogoCarro from '../../pages/LogoCarro' // Importamos el componente del logo
 
 const NAV = [
-  { to: '/dashboard',   label: 'Dashboard',  roles: ['admin', 'bodeguero'] },
-  { to: '/accesorios',   label: 'Accesorios',   roles: ['admin', 'bodeguero'] },
+  { to: '/dashboard',   label: 'Dashboard',   roles: ['admin', 'bodeguero'] },
+  { to: '/accesorios',  label: 'Accesorios',  roles: ['admin', 'bodeguero'] },
   { to: '/movimientos', label: 'Movimientos', roles: ['admin', 'bodeguero'] },
-  { to: '/reportes',    label: 'Reportes',   roles: ['admin', 'bodeguero'] },
-  { to: '/usuarios',    label: 'Usuarios',   roles: ['admin'] },
+  { to: '/reportes',    label: 'Reportes',    roles: ['admin', 'bodeguero'] },
+  { to: '/usuarios',    label: 'Usuarios',    roles: ['admin'] },
 ]
 
 export default function Sidebar() {
   const { usuario, logout } = useAuth()
-  const navigate = useNavigate()
+  const navigate  = useNavigate()
+  const location  = useLocation()
+  const [open, setOpen] = useState(false)
+
+  useEffect(() => { setOpen(false) }, [location.pathname])
+
+  useEffect(() => {
+    document.body.style.overflow = open ? 'hidden' : ''
+    return () => { document.body.style.overflow = '' }
+  }, [open])
 
   const handleLogout = () => { logout(); navigate('/login') }
 
-  return (
-    <aside className="sidebar">
-      {/* Añadido un flexbox simple para que el logo y el texto queden perfectamente alineados en la misma línea */}
-      <div className="sidebar__brand" style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
-        {/* Cambiado el emoji viejo por el componente SVG con la silueta oficial */}
-        <LogoCarro 
-          className="sidebar__logo-svg" 
-          style={{ width: '80px', height: 'auto' }} 
-        />
+  const sidebarContent = (
+    <>
+      <div className="sidebar__brand">
+        <LogoCarro className="sidebar__logo-svg" style={{ width: '80px', height: 'auto' }} />
         <span className="sidebar__title">AUTO<span>SPORT</span></span>
       </div>
 
@@ -36,7 +41,6 @@ export default function Sidebar() {
             to={n.to}
             className={({ isActive }) => `sidebar__link${isActive ? ' sidebar__link--active' : ''}`}
           >
-            <span className="sidebar__icon">{n.icon}</span>
             {n.label}
           </NavLink>
         ))}
@@ -52,6 +56,45 @@ export default function Sidebar() {
         </div>
         <button className="sidebar__logout" onClick={handleLogout}>Cerrar sesión</button>
       </div>
-    </aside>
+    </>
+  )
+
+  return (
+    <>
+      {/* ── Topbar móvil ── */}
+      <header className="mobile-header">
+        <div className="mobile-header__brand">
+          <LogoCarro style={{ width: '48px', height: 'auto' }} />
+          <span className="sidebar__title">AUTO<span>SPORT</span></span>
+        </div>
+        <button
+          className="mobile-header__hamburger"
+          onClick={() => setOpen(true)}
+          aria-label="Abrir menú"
+        >
+          ☰
+        </button>
+      </header>
+
+      {/* ── Sidebar desktop (siempre visible) ── */}
+      <aside className="sidebar sidebar--desktop">
+        {sidebarContent}
+      </aside>
+
+      {/* ── Overlay oscuro móvil ── */}
+      {open && (
+        <div className="sidebar-overlay" onClick={() => setOpen(false)} />
+      )}
+
+      {/* ── Drawer móvil ── */}
+      <aside className={`sidebar sidebar--mobile${open ? ' sidebar--mobile-open' : ''}`}>
+        <button
+          className="sidebar__close"
+          onClick={() => setOpen(false)}
+          aria-label="Cerrar menú"
+        >✕</button>
+        {sidebarContent}
+      </aside>
+    </>
   )
 }
