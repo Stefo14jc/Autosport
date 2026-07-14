@@ -14,8 +14,8 @@ const NAV = [
 
 export default function Sidebar() {
   const { usuario, logout } = useAuth()
-  const navigate  = useNavigate()
-  const location  = useLocation()
+  const navigate = useNavigate()
+  const location = useLocation()
   const [open, setOpen] = useState(false)
 
   useEffect(() => { setOpen(false) }, [location.pathname])
@@ -61,7 +61,6 @@ export default function Sidebar() {
 
   return (
     <>
-      {/* ── Topbar móvil ── */}
       <header className="mobile-header">
         <div className="mobile-header__brand">
           <LogoCarro style={{ width: '48px', height: 'auto' }} />
@@ -71,27 +70,53 @@ export default function Sidebar() {
           className="mobile-header__hamburger"
           onClick={() => setOpen(true)}
           aria-label="Abrir menú"
-        >
-          ☰
-        </button>
+        >☰</button>
       </header>
 
-      {/* ── Sidebar desktop (siempre visible) ── */}
       <aside className="sidebar sidebar--desktop">
         {sidebarContent}
       </aside>
 
-      {/* ── Overlay oscuro móvil ── */}
       {open && (
-        <div className="sidebar-overlay" onClick={() => setOpen(false)} />
+        <div
+          onClick={() => setOpen(false)}
+          style={{
+            position: 'fixed',
+            inset: 0,
+            background: 'rgba(0,0,0,0.7)',
+            zIndex: 110,
+          }}
+        />
       )}
 
-      {/* ── Drawer móvil ── */}
-      <aside className={`sidebar sidebar--mobile${open ? ' sidebar--mobile-open' : ''}`}>
+      <aside
+        style={{
+          position: 'fixed',
+          top: 0,
+          left: 0,
+          height: '100vh',
+          width: '280px',
+          background: 'var(--surface)',
+          borderRight: '1px solid var(--border)',
+          display: 'flex',
+          flexDirection: 'column',
+          zIndex: 120,
+          transform: open ? 'translateX(0)' : 'translateX(-100%)',
+          transition: 'transform 0.28s ease',
+          overflowY: 'auto',
+        }}
+      >
         <button
-          className="sidebar__close"
           onClick={() => setOpen(false)}
-          aria-label="Cerrar menú"
+          style={{
+            alignSelf: 'flex-end',
+            background: 'none',
+            border: 'none',
+            color: 'var(--text-muted)',
+            fontSize: '22px',
+            cursor: 'pointer',
+            padding: '16px 16px 0',
+          }}
         >✕</button>
         {sidebarContent}
       </aside>
