@@ -1,6 +1,16 @@
 import axios from 'axios'
 
-const api = axios.create({ baseURL: import.meta.env.VITE_API_URL || 'http://localhost:5000' })
+// Obtenemos la URL de las variables de entorno
+const envUrl = import.meta.env.VITE_API_URL;
+
+// Si la URL existe pero no empieza con http o https, le inyectamos 'https://' automáticamente
+const formattedBaseURL = envUrl 
+  ? (envUrl.startsWith('http') ? envUrl : `https://${envUrl}`) 
+  : 'http://localhost:5000';
+
+const api = axios.create({ 
+  baseURL: formattedBaseURL 
+})
 
 api.interceptors.request.use(cfg => {
   const token = localStorage.getItem('as_token')
