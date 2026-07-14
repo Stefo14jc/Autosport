@@ -45,7 +45,7 @@ input, select, textarea { font-family: var(--font-body); }
 ::-webkit-scrollbar-track { background: var(--surface); }
 ::-webkit-scrollbar-thumb { background: var(--border); border-radius: 3px; }
 /* ── Shared layout ── */
-.page { margin-left: 240px; min-height: 100vh; display: flex; flex-direction: column; }
+.page { margin-left: 240px; min-height: 100vh; display: flex; flex-direction: column; overflow-y: auto; }
 .page__body { padding: 28px; flex: 1; }
 .page-loader { margin-left: 240px; display: flex; align-items: center; justify-content: center; height: 100vh; color: var(--text-muted); }
 
