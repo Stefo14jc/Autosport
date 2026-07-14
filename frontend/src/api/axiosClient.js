@@ -1,17 +1,24 @@
 import axios from 'axios'
 
-// Obtenemos la URL de las variables de entorno
+// 1. Obtenemos la URL de las variables de entorno
 const envUrl = import.meta.env.VITE_API_URL;
 
-// Si la URL existe pero no empieza con http o https, le inyectamos 'https://' automáticamente
-const formattedBaseURL = envUrl 
+// 2. Limpiamos y aseguramos el https://
+let formattedURL = envUrl 
   ? (envUrl.startsWith('http') ? envUrl : `https://${envUrl}`) 
   : 'http://localhost:5000';
 
+// 3. Le agregamos el '/api' al final para que coincida con tu backend
+if (!formattedURL.endsWith('/api')) {
+  formattedURL += '/api';
+}
+
+// 4. Creamos la instancia de Axios
 const api = axios.create({ 
-  baseURL: formattedBaseURL 
+  baseURL: formattedURL 
 })
 
+// === INTERCEPTORES ===
 api.interceptors.request.use(cfg => {
   const token = localStorage.getItem('as_token')
   if (token) cfg.headers.Authorization = `Bearer ${token}`
