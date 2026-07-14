@@ -10,6 +10,5 @@ router.get('/:id', auth, ctrl.obtener)
 router.post('/', auth, role('admin'), ctrl.crear)
 router.put('/:id', auth, role('admin'), ctrl.actualizar)
 router.delete('/:id', auth, role('admin'), ctrl.eliminar)
-router.get('/scan/:id', ctrl.scanPublico)
-
+router.get('/scan/:id', auth, role('admin', 'bodeguero'), ctrl.scanPublico)
 module.exports = router
