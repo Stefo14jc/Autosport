@@ -26,7 +26,7 @@ export default function App() {
           <Layout />
           <Routes>
             <Route path="/login" element={<Login />} />
-            <Route path="/accesorios/scan/:id" element={<ScanView />} />
+            <Route path="/accesorios/scan/:id" element={<ProtectedRoute><ScanView /></ProtectedRoute>} />
             <Route path="/dashboard" element={<ProtectedRoute><Dashboard /></ProtectedRoute>} />
             <Route path="/accesorios" element={<ProtectedRoute><Accesorios /></ProtectedRoute>} />
             <Route path="/movimientos" element={<ProtectedRoute><Movimientos /></ProtectedRoute>} />
