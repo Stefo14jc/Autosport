@@ -1,5 +1,5 @@
 import { useState } from 'react'
-import { useNavigate } from 'react-router-dom'
+import { useNavigate, useLocation } from 'react-router-dom'
 import { useAuth } from '../context/AuthContext'
 import { useTheme } from '../context/ThemeContext'
 import './Login.css'
@@ -17,29 +17,25 @@ export default function Login() {
   const { login }             = useAuth()
   const { theme, toggleTheme } = useTheme()
   const navigate              = useNavigate()
-
-  // Al escribir, NO tocamos el error. Se queda en pantalla.
+  const location              = useLocation()
   const handleChange = e => setForm(f => ({ ...f, [e.target.name]: e.target.value }))
 
   const handleSubmit = async (e, emailToAuth, passwordToAuth) => {
-    // CRUCIAL: Detiene de golpe cualquier recarga automática del navegador
     if (e) {
       e.preventDefault();
       e.stopPropagation();
     }
     
     setLoading(true)
-    setError('') // Solo se limpia al intentar iniciar sesión de nuevo
+    setError('') 
     
     try {
       await login(emailToAuth, passwordToAuth)
-      navigate('/dashboard')
+      const from = location.state?.from || '/dashboard'
+      navigate(from)
     } catch (err) {
-      // 1. Guardamos el mensaje que viene del backend
       const msgError = err.response?.data?.error || 'Error de autenticación: Credenciales inválidas'
       setError(msgError)
-      
-      // 2. ¡REQUISITO COMPLETADO!: Vaciamos los campos de texto para que el usuario vuelva a escribir
       setForm({ email: '', password: '' })
     } finally { 
       setLoading(false) 
@@ -69,7 +65,7 @@ export default function Login() {
             {QUICK.map(q => (
               <button
                 key={q.label}
-                type="button" // Evita comportamientos de submit indeseados
+                type="button"
                 className="login__quick-btn"
                 onClick={(e) => handleSubmit(e, q.email, q.password)}
                 disabled={loading}
@@ -82,7 +78,6 @@ export default function Login() {
 
         <div className="login__divider"><span>o ingresa manualmente</span></div>
 
-        {/* Capturamos el evento onSubmit aquí para frenar la recarga de raíz */}
         <form className="login__form" onSubmit={(e) => handleSubmit(e, form.email, form.password)}>
           <div className="login__field">
             <label>Email</label>
