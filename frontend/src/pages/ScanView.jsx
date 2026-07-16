@@ -89,7 +89,7 @@ export default function ScanView() {
             </div>
             <div className="scan-stock__numero" style={{ color: nivelColor[nivel] }}>
               {rep.stock_actual}
-              <span className="scan-stock__unidad"> uds</span>
+              <span className="scan-stock__unidad"> unidades</span>
             </div>
             <div className="scan-stock__track">
               <div
