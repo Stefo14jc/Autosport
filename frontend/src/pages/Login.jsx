@@ -103,7 +103,7 @@ export default function Login() {
               type="text"
               value={form.email}
               onChange={handleChange}
-              placeholder="mauri / usuario@autosport.com"
+              placeholder="username / usuario@autosport.com"
             />
           </div>
           
