@@ -13,6 +13,7 @@
   background: var(--card); border: 1px solid var(--border);
   color: var(--text); padding: 7px 14px;
   border-radius: var(--radius); font-size: 13px;
+  cursor: pointer;
 }
 .login__card {
   width: 100%; max-width: 420px;
@@ -20,6 +21,7 @@
   border: 1px solid var(--border);
   border-radius: 16px;
   padding: 40px 36px;
+  position: relative;
 }
 .login__brand { text-align: center; margin-bottom: 28px; }
 .login__icon  { font-size: 42px; display: block; margin-bottom: 8px; }
@@ -39,9 +41,10 @@
   border-radius: var(--radius); color: var(--orange);
   font-size: 13px; font-weight: 600;
   transition: all var(--transition);
+  cursor: pointer;
 }
 .login__quick-btn:hover { background: var(--orange); color: #fff; border-color: var(--orange); }
-.login__quick-btn:disabled { opacity: .5; }
+.login__quick-btn:disabled { opacity: .5; cursor: not-allowed; }
 
 .login__divider {
   text-align: center; position: relative;
@@ -75,6 +78,18 @@
   border: none; border-radius: var(--radius);
   color: #fff; font-size: 15px; font-weight: 700;
   letter-spacing: 0.5px; transition: background var(--transition);
+  cursor: pointer;
 }
 .login__submit:hover:not(:disabled) { background: var(--orange-dark); }
-.login__submit:disabled { opacity: .6; }
+.login__submit:disabled { opacity: .6; cursor: not-allowed; }
+
+/* Media Query para el botón de tema móvil */
+@media (max-width: 768px) {
+  .login__theme {
+    position: relative;
+    top: auto;
+    right: auto;
+    margin: 0 auto 16px;
+    display: block;
+  }
+}

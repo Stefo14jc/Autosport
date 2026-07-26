@@ -100,7 +100,7 @@ export default function ScanView() {
                 }}
               />
             </div>
-            <p className="scan-stock__minimo">Mínimo requerido: {rep.stock_minimo} uds</p>
+            <p className="scan-stock__minimo">Mínimo requerido: {rep.stock_minimo} Unidadees</p>
           </div>
 
         </div>

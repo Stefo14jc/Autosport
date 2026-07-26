@@ -14,10 +14,14 @@ export default function Login() {
   const [form, setForm]       = useState({ email: '', password: '' })
   const [error, setError]     = useState('')
   const [loading, setLoading] = useState(false)
-  const { login }             = useAuth()
+  const [bloqueado, setBloqueado]       = useState(false)
+  const [segRestantes, setSegRestantes] = useState(0)
+  
+  const { login }              = useAuth()
   const { theme, toggleTheme } = useTheme()
   const navigate              = useNavigate()
   const location              = useLocation()
+  
   const handleChange = e => setForm(f => ({ ...f, [e.target.name]: e.target.value }))
 
   const handleSubmit = async (e, emailToAuth, passwordToAuth) => {
@@ -34,6 +38,19 @@ export default function Login() {
       const from = location.state?.from || '/dashboard'
       navigate(from)
     } catch (err) {
+      if (err.response?.status === 429) {
+        setBloqueado(true)
+        let seg = 300
+        setSegRestantes(seg)
+        const timer = setInterval(() => {
+          seg--
+          setSegRestantes(seg)
+          if (seg <= 0) { 
+            clearInterval(timer) 
+            setBloqueado(false) 
+          }
+        }, 1000)
+      }
       const msgError = err.response?.data?.error || 'Error de autenticación: Credenciales inválidas'
       setError(msgError)
       setForm({ email: '', password: '' })
@@ -44,11 +61,11 @@ export default function Login() {
 
   return (
     <div className="login">
-      <button className="login__theme" onClick={toggleTheme} type="button">
-        {theme === 'dark' ? ' Modo Claro' : ' Modo Oscuro'}
-      </button>
-
       <div className="login__card">
+        <button className="login__theme" onClick={toggleTheme} type="button">
+          {theme === 'dark' ? ' Modo Claro' : ' Modo Oscuro'}
+        </button>
+
         <div className="login__brand">
           <LogoCarro 
             className="login__logo-svg" 
@@ -68,7 +85,7 @@ export default function Login() {
                 type="button"
                 className="login__quick-btn"
                 onClick={(e) => handleSubmit(e, q.email, q.password)}
-                disabled={loading}
+                disabled={loading || bloqueado}
               >
                 {q.label}
               </button>
@@ -80,16 +97,16 @@ export default function Login() {
 
         <form className="login__form" onSubmit={(e) => handleSubmit(e, form.email, form.password)}>
           <div className="login__field">
-            <label>Email</label>
+            <label>Usuario o Email</label>
             <input
-              name="email" 
-              type="email" 
+              name="email"
+              type="text"
               value={form.email}
-              onChange={handleChange} 
-              placeholder="usuario@autosport.com"
-              required
+              onChange={handleChange}
+              placeholder="mauri / usuario@autosport.com"
             />
           </div>
+          
           <div className="login__field">
             <label>Contraseña</label>
             <input
@@ -107,9 +124,9 @@ export default function Login() {
           <button
             type="submit"
             className="login__submit"
-            disabled={loading}
+            disabled={loading || bloqueado}
           >
-            {loading ? 'Verificando...' : 'Ingresar'}
+            {bloqueado ? `Bloqueado ${segRestantes}s` : loading ? 'Verificando...' : 'Ingresar'}
           </button>
         </form>
       </div>
