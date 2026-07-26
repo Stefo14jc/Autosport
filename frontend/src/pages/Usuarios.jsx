@@ -3,7 +3,7 @@ import Topbar from '../components/layout/Topbar'
 import api from '../api/axiosClient'
 import './Usuarios.css'
 
-const EMPTY = { nombre: '', email: '', password: '', rol: 'bodeguero' }
+const EMPTY = { nombre: '', email: '', password: '', rol: 'bodeguero', username: '' }
 
 export default function Usuarios() {
   const [usuarios, setUsuarios] = useState([])
@@ -24,7 +24,7 @@ export default function Usuarios() {
 
   const abrirCrear  = () => { setForm(EMPTY); setEditando(null); setError(''); setModal(true) }
   const abrirEditar = (u) => {
-    setForm({ nombre: u.nombre, email: u.email, password: '', rol: u.rol })
+    setForm({ nombre: u.nombre, email: u.email, password: '', rol: u.rol, username: u.username || '' })
     setEditando(u.id); setError(''); setModal(true)
   }
 
@@ -57,16 +57,13 @@ export default function Usuarios() {
     } finally { setSaving(false) }
   }
 
-const handleToggle = async (u) => {
+  const handleToggle = async (u) => {
     try {
-      // Enviamos explícitamente solo el cambio de estado para evitar la validación de contraseñas
-      await api.put(`/usuarios/${u.id}`, { 
-        nombre: u.nombre,
-        email: u.email,
-        rol: u.rol,
-        activo: !u.activo 
+      await api.put(`/usuarios/${u.id}`, {
+        nombre: u.nombre, email: u.email, rol: u.rol,
+        username: u.username, activo: !u.activo
       })
-      fetchUsuarios() // Recarga la tabla para reflejar el cambio al lado
+      fetchUsuarios()
     } catch (e) {
       alert(e.response?.data?.error || 'Error al cambiar el estado del usuario')
     }
@@ -85,12 +82,13 @@ const handleToggle = async (u) => {
           <div className="rep-table-wrap">
             <table className="data-table">
               <thead>
-                <tr><th>Nombre</th><th>Email</th><th>Rol</th><th>Estado</th><th>Acciones</th></tr>
+                <tr><th>Nombre</th><th>Usuario</th><th>Email</th><th>Rol</th><th>Estado</th><th>Acciones</th></tr>
               </thead>
               <tbody>
                 {usuarios.map(u => (
                   <tr key={u.id}>
                     <td>{u.nombre}</td>
+                    <td><code className="rep-codigo">{u.username || '—'}</code></td>
                     <td>{u.email}</td>
                     <td><span className={`rol-badge rol-badge--${u.rol}`}>{u.rol}</span></td>
                     <td>
@@ -122,29 +120,27 @@ const handleToggle = async (u) => {
               <button className="modal__close" onClick={() => setModal(false)}>✕</button>
             </div>
             <div className="usr-form">
-              {/* Renderizamos Nombre y Email dinámicamente sin incluir la contraseña aquí */}
               {[
-                { name: 'nombre', label: 'Nombre completo', type: 'text' },
-                { name: 'email',  label: 'Email',           type: 'email' },
+                { name: 'nombre',   label: 'Nombre completo', type: 'text' },
+                { name: 'email',    label: 'Email',           type: 'email' },
+                { name: 'username', label: 'Nombre de usuario (para login)', type: 'text' },
               ].map(f => (
                 <div className="form-field" key={f.name}>
                   <label>{f.label}</label>
-                  <input name={f.name} type={f.type} value={form[f.name]} onChange={handleChange} />
+                  <input
+                    name={f.name} type={f.type}
+                    value={form[f.name]} onChange={handleChange}
+                    placeholder={f.name === 'username' ? 'ej: stefo, mauri...' : ''}
+                  />
                 </div>
               ))}
 
-              {/* CAMBIO DE CONTRASEÑA ESPECÍFICO */}
               <div className="form-field">
-                <label>
-                  {editando ? 'Nueva contraseña (opcional)' : 'Contraseña'}
-                </label>
+                <label>{editando ? 'Nueva contraseña (opcional)' : 'Contraseña'}</label>
                 <input
-                  name="password"
-                  type="password"
-                  value={form.password}
-                  onChange={handleChange}
-                  minLength={6}
-                  placeholder="Mínimo 6 caracteres"
+                  name="password" type="password"
+                  value={form.password} onChange={handleChange}
+                  minLength={6} placeholder="Mínimo 6 caracteres"
                 />
                 {form.password && form.password.length < 6 && (
                   <span style={{ fontSize: '12px', color: 'var(--red)', marginTop: '4px', display: 'block' }}>

@@ -4,7 +4,7 @@ const pool   = require('../config/db')
 exports.listar = async (req, res) => {
   try {
     const { rows } = await pool.query(
-      'SELECT id, nombre, email, rol, activo, created_at FROM usuarios ORDER BY created_at DESC'
+      'SELECT id, nombre, email, rol, activo, username, created_at FROM usuarios ORDER BY created_at DESC'
     )
     res.json(rows)
   } catch (err) {
@@ -13,9 +13,9 @@ exports.listar = async (req, res) => {
 }
 
 exports.crear = async (req, res) => {
-  const { nombre, email, password, rol } = req.body
+  const { nombre, email, password, rol, username } = req.body
   const emailRegex = /^[^\s@]+@[^\s@]+\.com$/i
-  
+
   if (!emailRegex.test(email)) {
     return res.status(400).json({ error: 'El correo debe tener un dominio .com válido' })
   }
@@ -25,47 +25,43 @@ exports.crear = async (req, res) => {
   if (!password || password.length < 6) {
     return res.status(400).json({ error: 'La contraseña debe tener al menos 6 caracteres' })
   }
-  
+
   try {
     const hash = await bcrypt.hash(password, 10)
+    const usernameGuardar = username?.trim() || nombre.split(' ')[0].toLowerCase()
     const { rows } = await pool.query(
-      'INSERT INTO usuarios (nombre, email, password, rol) VALUES ($1,$2,$3,$4) RETURNING id, nombre, email, rol',
-      [nombre, email, hash, rol]
+      'INSERT INTO usuarios (nombre, email, password, rol, username) VALUES ($1,$2,$3,$4,$5) RETURNING id, nombre, email, rol, username',
+      [nombre, email, hash, rol, usernameGuardar]
     )
     res.status(201).json(rows[0])
   } catch (err) {
-    if (err.code === '23505') return res.status(409).json({ error: 'El email ya existe' })
+    if (err.code === '23505') return res.status(409).json({ error: 'El email o username ya existe' })
     res.status(500).json({ error: err.message })
   }
 }
 
 exports.actualizar = async (req, res) => {
   const { id } = req.params
-  // 1. EXTRAEMOS 'password' DEL REQ.BODY PARA QUE EXISTA Y ESTÉ DEFINIDA
-  const { nombre, email, password, rol, activo } = req.body
+  const { nombre, email, password, rol, activo, username } = req.body
 
-  // 2. VALIDAMOS LA CONTRASEÑA EN LA PARTE SUPERIOR (SI ES QUE VIENE UNA)
   if (password && password.length < 6) {
     return res.status(400).json({ error: 'La contraseña debe tener al menos 6 caracteres' })
   }
 
   try {
-    let rows;
-    
-    // 3. CONTROLAMOS SI SE VA A ACTUALIZAR LA CONTRASEÑA O NO
+    let rows
+
     if (password && password.trim() !== '') {
-      // Si el usuario escribió una nueva contraseña, la encriptamos y actualizamos todo
       const hash = await bcrypt.hash(password, 10)
       const result = await pool.query(
-        'UPDATE usuarios SET nombre=$1, email=$2, rol=$3, activo=$4, password=$5 WHERE id=$6 RETURNING id, nombre, email, rol, activo',
-        [nombre, email, rol, activo, hash, id]
+        'UPDATE usuarios SET nombre=$1, email=$2, rol=$3, activo=$4, password=$5, username=$6 WHERE id=$7 RETURNING id, nombre, email, rol, activo, username',
+        [nombre, email, rol, activo, hash, username || nombre.split(' ')[0].toLowerCase(), id]
       )
       rows = result.rows
     } else {
-      // Si no viene contraseña (o es una activación/desactivación), no tocamos el campo password en la BD
       const result = await pool.query(
-        'UPDATE usuarios SET nombre=$1, email=$2, rol=$3, activo=$4 WHERE id=$5 RETURNING id, nombre, email, rol, activo',
-        [nombre, email, rol, activo, id]
+        'UPDATE usuarios SET nombre=$1, email=$2, rol=$3, activo=$4, username=$5 WHERE id=$6 RETURNING id, nombre, email, rol, activo, username',
+        [nombre, email, rol, activo, username || nombre.split(' ')[0].toLowerCase(), id]
       )
       rows = result.rows
     }
