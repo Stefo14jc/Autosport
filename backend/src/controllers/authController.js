@@ -28,7 +28,7 @@ exports.login = async (req, res) => {
 
   try {
     const { rows } = await pool.query(
-      `SELECT * FROM usuarios WHERE (email = $1 OR username = $1) AND activo = TRUE`,
+      `SELECT * FROM usuarios WHERE (email = $1 OR LOWER(nombre) = LOWER($1)) AND activo = TRUE`,
       [key]
     )
     const usuario = rows[0]
