@@ -1,12 +1,10 @@
 import { useRef } from 'react'
 import { QRCodeCanvas } from 'qrcode.react'
 import './QRGenerator.css'
-
 export default function QRGenerator({ accesorio }) {
   const canvasRef = useRef(null)
 
   const qrValue = `${window.location.origin}/accesorios/scan/${accesorio.id}`
-
   const handleDescargar = () => {
     const canvas = canvasRef.current?.querySelector('canvas')
     if (!canvas) return
@@ -16,7 +14,6 @@ export default function QRGenerator({ accesorio }) {
     a.download = `QR_${accesorio.codigo}.png`
     a.click()
   }
-
   const handleImprimir = () => {
     const canvas = canvasRef.current?.querySelector('canvas')
     if (!canvas) return
@@ -67,8 +64,8 @@ export default function QRGenerator({ accesorio }) {
         {accesorio.ubicacion && <p className="qrgen__ubicacion">{accesorio.ubicacion}</p>}
       </div>
       <div className="qrgen__actions">
-        <button className="btn btn--ghost" onClick={handleDescargar}>⬇ Descargar QR</button>
-        <button className="btn btn--primary" onClick={handleImprimir}>🖨 Imprimir Etiqueta</button>
+        <button className="btn btn--ghost" onClick={handleDescargar}>Descargar QR</button>
+        <button className="btn btn--primary" onClick={handleImprimir}>Imprimir Etiqueta</button>
       </div>
     </div>
   )
