@@ -282,11 +282,19 @@ export default function Login() {
 
   return (
     <div className="login">
-      <CarBg />
+      <video
+        className="login__bg-video"
+        autoPlay
+        muted
+        loop
+        playsInline
+        src="/bg-car.mp4"
+      />
+      <div className="login__overlay" />
 
       <div className="login__card">
         <button className="login__theme" onClick={toggleTheme} type="button">
-          {theme === "dark" ? "☀ Modo Claro" : "🌙 Modo Oscuro"}
+          {theme === "dark" ? "Modo Claro" : "Modo Oscuro"}
         </button>
 
         <div className="login__brand">
