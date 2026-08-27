@@ -1,6 +1,6 @@
 import { useEffect, useRef, useState } from "react";
 import { Html5Qrcode } from "html5-qrcode";
-import api from "../api/axiosClient";
+import api from "../../api/axiosClient";
 import "./QRScanner.css";
 
 export default function QRScanner({ onScanned }) {
