@@ -137,33 +137,48 @@ export default function QRScanner({ onScanned }) {
 
       {estado === "info" && accesorio && (
         <div className="qrscanner__preview">
-          <h3>{accesorio.nombre}</h3>
-          <p className="qrscanner__code">Código: {accesorio.codigo}</p>
-
-          <div className="qrscanner__details">
-            <p>
-              <strong>Categoría:</strong>{" "}
-              {accesorio.categoria || "Sin categoría"}
-            </p>
-            <p>
-              <strong>Ubicación:</strong> {accesorio.ubicacion || "No asignada"}
-            </p>
-            <p>
-              <strong>Precio:</strong> $
-              {parseFloat(accesorio.precio_unitario || 0).toFixed(2)}
-            </p>
-            <p>
-              <strong>Stock actual:</strong> {accesorio.stock_actual} unidades
-            </p>
+          {/* Cabecera centrada similar al Ajuste de Stock */}
+          <div className="qrscanner__preview-header">
+            <h3 className="qrscanner__title">{accesorio.nombre}</h3>
+            <span className="qrscanner__code">{accesorio.codigo}</span>
           </div>
 
-          <div className="qrscanner__actions">
+          {/* Tarjeta de detalles */}
+          <div className="qrscanner__details-card">
+            <div className="qrscanner__detail-row">
+              <span className="qrscanner__detail-label">Categoría</span>
+              <span className="qrscanner__detail-value">
+                {accesorio.categoria || "Sin categoría"}
+              </span>
+            </div>
+            <div className="qrscanner__detail-row">
+              <span className="qrscanner__detail-label">Ubicación</span>
+              <span className="qrscanner__detail-value">
+                {accesorio.ubicacion || "No asignada"}
+              </span>
+            </div>
+            <div className="qrscanner__detail-row">
+              <span className="qrscanner__detail-label">Precio</span>
+              <span className="qrscanner__detail-value">
+                ${parseFloat(accesorio.precio_unitario || 0).toFixed(2)}
+              </span>
+            </div>
+            <div className="qrscanner__detail-row qrscanner__detail-row--stock">
+              <span className="qrscanner__detail-label">Stock actual</span>
+              <span className="qrscanner__detail-value">
+                <strong>{accesorio.stock_actual}</strong>
+              </span>
+            </div>
+          </div>
+
+          {/* Botones apilados con el mismo estilo */}
+          <div className="qrscanner__actions-stack">
             <button
-              className="btn btn--primary"
+              className="btn btn--primary btn--full"
               onClick={() => onScanned(accesorio.id)}>
-              Continuar / Seleccionar
+              Confirmar Selección
             </button>
-            <button className="btn btn--ghost" onClick={reintentar}>
+            <button className="btn btn--ghost btn--full" onClick={reintentar}>
               Escanear otro
             </button>
           </div>
