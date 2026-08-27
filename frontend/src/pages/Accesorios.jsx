@@ -1,6 +1,5 @@
 import { useEffect, useState, useCallback } from "react";
 import Topbar from "../components/layout/Topbar";
-import StockBadge from "../components/ui/StockBadge";
 import QRGenerator from "../components/qr/QRGenerator";
 import QRScanner from "../components/qr/QRScanner";
 import { useAccesorios } from "../hooks/useAccesorios";
@@ -393,7 +392,6 @@ export default function Accesorios() {
                   />
                 </div>
               </div>
-
               {[
                 {
                   name: "stock_actual",
@@ -412,7 +410,6 @@ export default function Accesorios() {
                   />
                 </div>
               ))}
-
               <div className="form-field">
                 <label>Categoría</label>
                 <select
@@ -468,7 +465,6 @@ export default function Accesorios() {
           </div>
         </div>
       )}
-
       {modal === "qr" && qrTarget && (
         <div className="modal-overlay" onClick={() => setModal(null)}>
           <div className="modal" onClick={(e) => e.stopPropagation()}>
@@ -487,7 +483,6 @@ export default function Accesorios() {
           </div>
         </div>
       )}
-
       {stockModal && (
         <div className="modal-overlay" onClick={() => setStockModal(null)}>
           <div className="modal" onClick={(e) => e.stopPropagation()}>
@@ -535,7 +530,6 @@ export default function Accesorios() {
                 Stock actual: <strong>{stockModal.stock_actual}</strong>
               </p>
             </div>
-
             <div className="stock-tipo-btns">
               {["ingreso", "salida"].map((tipoReal) => (
                 <button
@@ -579,7 +573,6 @@ export default function Accesorios() {
                 +
               </button>
             </div>
-
             <div className="form-field" style={{ marginTop: "14px" }}>
               <label>Motivo (opcional)</label>
               <input
@@ -608,7 +601,6 @@ export default function Accesorios() {
           </div>
         </div>
       )}
-
       {scannerOpen && (
         <div className="modal-overlay" onClick={() => setScannerOpen(false)}>
           <div className="modal" onClick={(e) => e.stopPropagation()}>
