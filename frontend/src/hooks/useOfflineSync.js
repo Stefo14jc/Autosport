@@ -20,19 +20,20 @@ export function useOfflineSync() {
         try {
           await api({
             method: item.method,
-            url: item.url.replace(location.origin, ""),
+            url: "/movimientos",
             data: item.body,
           });
         } catch {
           fallidos.push(item);
         }
       }
+
       localStorage.setItem(COLA_KEY, JSON.stringify(fallidos));
       setPendientes(fallidos.length);
-      if (fallidos.length === 0)
-        alert(
-          "Sincronización completada: todos los movimientos offline fueron enviados.",
-        );
+
+      if (fallidos.length === 0) {
+        alert("Sincronizacion completada.");
+      }
     };
 
     const onOffline = () => setOnline(false);
