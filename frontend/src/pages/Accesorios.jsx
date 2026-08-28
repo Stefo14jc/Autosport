@@ -534,15 +534,15 @@ export default function Accesorios() {
                   gap: "6px",
                 }}>
                 <div>
-                  <strong>📍 Ubicación:</strong>{" "}
+                  <strong>Ubicación:</strong>{" "}
                   {stockModal.ubicacion || "No asignada"}
                 </div>
                 <div>
-                  <strong>🏷 Categoría:</strong>{" "}
+                  <strong>Categoría:</strong>{" "}
                   {stockModal.categoria || "Sin categoría"}
                 </div>
                 <div>
-                  <strong>💲 Precio unitario:</strong> $
+                  <strong>Precio unitario:</strong> $
                   {parseFloat(stockModal.precio_unitario || 0).toFixed(2)}
                 </div>
               </div>
