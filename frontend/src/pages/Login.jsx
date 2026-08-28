@@ -10,226 +10,6 @@ const QUICK = [
   { label: " Bodeguero", email: "bodega@autosport.com", password: "bodega123" },
 ];
 
-function CarBg() {
-  return (
-    <svg
-      className="login__bg-svg"
-      viewBox="0 0 1200 400"
-      xmlns="http://www.w3.org/2000/svg"
-      preserveAspectRatio="xMidYMid slice">
-      {/* Líneas de carretera */}
-      <line
-        x1="0"
-        y1="300"
-        x2="1200"
-        y2="300"
-        stroke="#F97316"
-        strokeWidth="1"
-        strokeOpacity="0.15"
-      />
-      <line
-        x1="0"
-        y1="320"
-        x2="1200"
-        y2="320"
-        stroke="#F97316"
-        strokeWidth="0.5"
-        strokeOpacity="0.08"
-      />
-      {/* Líneas de carril animadas */}
-      <g className="road-lines">
-        <rect
-          x="0"
-          y="308"
-          width="80"
-          height="3"
-          fill="#ffffff"
-          fillOpacity="0.08"
-          rx="2"
-        />
-        <rect
-          x="160"
-          y="308"
-          width="80"
-          height="3"
-          fill="#ffffff"
-          fillOpacity="0.08"
-          rx="2"
-        />
-        <rect
-          x="320"
-          y="308"
-          width="80"
-          height="3"
-          fill="#ffffff"
-          fillOpacity="0.08"
-          rx="2"
-        />
-        <rect
-          x="480"
-          y="308"
-          width="80"
-          height="3"
-          fill="#ffffff"
-          fillOpacity="0.08"
-          rx="2"
-        />
-        <rect
-          x="640"
-          y="308"
-          width="80"
-          height="3"
-          fill="#ffffff"
-          fillOpacity="0.08"
-          rx="2"
-        />
-        <rect
-          x="800"
-          y="308"
-          width="80"
-          height="3"
-          fill="#ffffff"
-          fillOpacity="0.08"
-          rx="2"
-        />
-        <rect
-          x="960"
-          y="308"
-          width="80"
-          height="3"
-          fill="#ffffff"
-          fillOpacity="0.08"
-          rx="2"
-        />
-        <rect
-          x="1120"
-          y="308"
-          width="80"
-          height="3"
-          fill="#ffffff"
-          fillOpacity="0.08"
-          rx="2"
-        />
-      </g>
-      {/* Carro 1 — grande, naranja */}
-      <g className="car-1">
-        <path
-          d="M20,280 L50,260 L130,256 L160,260 L170,280 Z"
-          fill="#F97316"
-          fillOpacity="0.25"
-        />
-        <path
-          d="M55,262 L80,252 L120,252 L140,262 Z"
-          fill="#F97316"
-          fillOpacity="0.35"
-        />
-        <circle
-          cx="55"
-          cy="282"
-          r="10"
-          fill="#1a1a1a"
-          stroke="#F97316"
-          strokeWidth="2"
-          strokeOpacity="0.4"
-        />
-        <circle
-          cx="145"
-          cy="282"
-          r="10"
-          fill="#1a1a1a"
-          stroke="#F97316"
-          strokeWidth="2"
-          strokeOpacity="0.4"
-        />
-        <line
-          x1="0"
-          y1="274"
-          x2="22"
-          y2="274"
-          stroke="#F97316"
-          strokeWidth="3"
-          strokeOpacity="0.6"
-        />
-      </g>
-      {/* Carro 2 — pequeño, más rápido */}
-      <g className="car-2">
-        <path
-          d="M900,285 L920,272 L980,270 L1000,272 L1010,285 Z"
-          fill="#F97316"
-          fillOpacity="0.15"
-        />
-        <path
-          d="M924,274 L940,266 L972,266 L988,274 Z"
-          fill="#F97316"
-          fillOpacity="0.2"
-        />
-        <circle
-          cx="924"
-          cy="287"
-          r="8"
-          fill="#1a1a1a"
-          stroke="#F97316"
-          strokeWidth="1.5"
-          strokeOpacity="0.3"
-        />
-        <circle
-          cx="990"
-          cy="287"
-          r="8"
-          fill="#1a1a1a"
-          stroke="#F97316"
-          strokeWidth="1.5"
-          strokeOpacity="0.3"
-        />
-        <line
-          x1="878"
-          y1="280"
-          x2="902"
-          y2="280"
-          stroke="#F97316"
-          strokeWidth="2"
-          strokeOpacity="0.4"
-        />
-      </g>
-      {/* Líneas de velocidad */}
-      <g className="speed-lines">
-        <line
-          x1="0"
-          y1="268"
-          x2="60"
-          y2="268"
-          stroke="#F97316"
-          strokeWidth="1"
-          strokeOpacity="0.2"
-        />
-        <line
-          x1="0"
-          y1="272"
-          x2="40"
-          y2="272"
-          stroke="#F97316"
-          strokeWidth="0.5"
-          strokeOpacity="0.15"
-        />
-        <line
-          x1="0"
-          y1="276"
-          x2="50"
-          y2="276"
-          stroke="#F97316"
-          strokeWidth="0.5"
-          strokeOpacity="0.1"
-        />
-      </g>
-      {/* Puntos de luz lejanos */}
-      <circle cx="1100" cy="250" r="2" fill="#F97316" fillOpacity="0.3" />
-      <circle cx="1140" cy="255" r="1.5" fill="#F97316" fillOpacity="0.2" />
-      <circle cx="200" cy="240" r="1" fill="#ffffff" fillOpacity="0.15" />
-      <circle cx="600" cy="230" r="1.5" fill="#ffffff" fillOpacity="0.1" />
-    </svg>
-  );
-}
-
 export default function Login() {
   const [form, setForm] = useState({ email: "", password: "" });
   const [error, setError] = useState("");
@@ -257,6 +37,24 @@ export default function Login() {
       const from = location.state?.from || "/dashboard";
       navigate(from);
     } catch (err) {
+      // --- INTEGRACIÓN OFFLINE ---
+      if (!navigator.onLine) {
+        const userCached = localStorage.getItem("as_user");
+        const tokenCached = localStorage.getItem("as_token");
+        if (userCached && tokenCached) {
+          const from = location.state?.from || "/dashboard";
+          navigate(from);
+          return;
+        } else {
+          setError(
+            "Sin conexión y sin sesión previa guardada. Conéctate a internet para ingresar.",
+          );
+          setLoading(false);
+          return;
+        }
+      }
+      // --- FIN INTEGRACIÓN OFFLINE ---
+
       if (err.response?.status === 429) {
         setBloqueado(true);
         let seg = 300;

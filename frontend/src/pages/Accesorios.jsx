@@ -218,7 +218,28 @@ export default function Accesorios() {
       setStockModal(null);
       fetchAccesorios();
     } catch (e) {
-      setError(e.response?.data?.error || "Error al registrar movimiento");
+      if (!navigator.onLine) {
+        const cola = JSON.parse(localStorage.getItem("offline_queue") || "[]");
+        cola.push({
+          url: "/api/movimientos",
+          method: "POST",
+          body: {
+            accesorio_id: stockModal.id,
+            tipo: movForm.tipo,
+            cantidad: parseInt(movForm.cantidad) || 1,
+            motivo: movForm.motivo,
+            origen_qr: true,
+          },
+          timestamp: Date.now(),
+        });
+        localStorage.setItem("offline_queue", JSON.stringify(cola));
+        setStockModal(null);
+        alert(
+          "Sin conexión: movimiento guardado localmente. Se enviará cuando vuelva el internet.",
+        );
+      } else {
+        setError(e.response?.data?.error || "Error al registrar movimiento");
+      }
     } finally {
       setSaving(false);
     }
