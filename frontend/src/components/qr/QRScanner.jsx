@@ -37,6 +37,16 @@ export default function QRScanner({ onScanned }) {
       setAccesorio(res.data);
       setEstado("info");
     } catch {
+      const cached = localStorage.getItem("cache_accesorios");
+      if (cached) {
+        const lista = JSON.parse(cached);
+        const encontrado = lista.find((a) => a.id === id);
+        if (encontrado) {
+          setAccesorio(encontrado);
+          setEstado("info");
+          return;
+        }
+      }
       setEstado("error");
       setMensaje("Accesorio no encontrado o inactivo en el sistema");
     } finally {
