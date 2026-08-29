@@ -42,6 +42,9 @@ export default function Accesorios() {
   const [scannerOpen, setScannerOpen] = useState(false);
   const [stockModal, setStockModal] = useState(null);
 
+  // NUEVO ESTADO: Controla la impresión masiva
+  const [isPrintingAll, setIsPrintingAll] = useState(false);
+
   const [movForm, setMovForm] = useState({
     tipo: "ingreso",
     cantidad: "",
@@ -71,6 +74,7 @@ export default function Accesorios() {
       .catch(() => setUbicaciones([]));
   }, []);
 
+  // El buscador filtra los accesorios que se muestran en la tabla Y los que se van a imprimir
   const accesoriosFiltrados = accesorios.filter(
     (r) =>
       r.nombre.toLowerCase().includes(busqueda.toLowerCase()) ||
@@ -245,6 +249,21 @@ export default function Accesorios() {
     }
   };
 
+  // NUEVA FUNCIÓN: Maneja la impresión masiva de QRs basada en los filtros
+  const handleImprimirPlanilla = () => {
+    if (accesoriosFiltrados.length === 0) {
+      alert("No hay accesorios en pantalla para imprimir.");
+      return;
+    }
+    // Activamos la vista de impresión (muestra el contenedor oculto)
+    setIsPrintingAll(true);
+    // Damos un breve tiempo (800ms) para que React dibuje los QRs antes de abrir la ventana de impresión
+    setTimeout(() => {
+      window.print();
+      setIsPrintingAll(false); // Oculta la vista después de imprimir o cancelar
+    }, 800);
+  };
+
   return (
     <div className="page">
       <Topbar title="Accesorios" />
@@ -259,6 +278,13 @@ export default function Accesorios() {
             />
           </div>
           <div className="rep-toolbar__actions">
+            {/* NUEVO BOTÓN PARA IMPRIMIR PLANILLA */}
+            <button
+              className="btn btn--ghost"
+              onClick={handleImprimirPlanilla}
+              title="Imprime los QRs que se muestran actualmente en la tabla">
+              Imprimir QRs
+            </button>
             <button
               className="btn btn--ghost"
               onClick={() => setScannerOpen(true)}>
@@ -486,6 +512,8 @@ export default function Accesorios() {
           </div>
         </div>
       )}
+
+      {/* MODAL PARA IMPRESIÓN INDIVIDUAL */}
       {modal === "qr" && qrTarget && (
         <div className="modal-overlay" onClick={() => setModal(null)}>
           <div className="modal" onClick={(e) => e.stopPropagation()}>
@@ -504,6 +532,7 @@ export default function Accesorios() {
           </div>
         </div>
       )}
+
       {stockModal && (
         <div className="modal-overlay" onClick={() => setStockModal(null)}>
           <div className="modal" onClick={(e) => e.stopPropagation()}>
@@ -519,7 +548,6 @@ export default function Accesorios() {
               <p className="stock-modal-name">{stockModal.nombre}</p>
               <p className="stock-modal-code">{stockModal.codigo}</p>
 
-              {/* INFORMACIÓN EXTRA AGREGADA AL ESCANEAR O SELECCIONAR ACCESORIO */}
               <div
                 className="stock-modal-extra"
                 style={{
@@ -622,6 +650,7 @@ export default function Accesorios() {
           </div>
         </div>
       )}
+
       {scannerOpen && (
         <div className="modal-overlay" onClick={() => setScannerOpen(false)}>
           <div className="modal" onClick={(e) => e.stopPropagation()}>
@@ -635,6 +664,49 @@ export default function Accesorios() {
             </div>
             <QRScanner onScanned={handleQrScaneado} />
           </div>
+        </div>
+      )}
+
+      {/* CONTENEDOR INVISIBLE: Solo se activa y renderiza cuando presionas "Imprimir QRs" */}
+      {isPrintingAll && (
+        <div className="print-grid-container">
+          {/* Estilos inyectados específicamente para la impresión en cuadrícula */}
+          <style>{`
+            @media print {
+              /* Oculta la página principal para que no salga en la impresión */
+              body * { visibility: hidden; }
+              
+              /* Muestra únicamente nuestro contenedor de QRs y sus hijos */
+              .print-grid-container, .print-grid-container * {
+                visibility: visible;
+              }
+              
+              .print-grid-container {
+                position: absolute;
+                left: 0;
+                top: 0;
+                width: 100%;
+                display: grid;
+                grid-template-columns: repeat(4, 1fr); /* 4 QRs por fila */
+                gap: 10px;
+                justify-items: center;
+              }
+              
+              .qr-print-item {
+                border: 1px dashed #ccc;
+                padding: 15px;
+                page-break-inside: avoid; /* Evita que un QR se corte a la mitad en 2 hojas */
+                text-align: center;
+              }
+            }
+          `}</style>
+
+          {/* Renderiza todos los QRs de la lista actual filtrada */}
+          {accesoriosFiltrados.map((acc) => (
+            <div key={acc.id} className="qr-print-item">
+              <QRGenerator accesorio={acc} />
+            </div>
+          ))}
         </div>
       )}
     </div>
