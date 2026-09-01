@@ -38,27 +38,27 @@ export default function Movimientos() {
                 <tbody>
                   {movimientos.map((m) => (
                     <tr key={m.id}>
-                      <td className="mov-fecha">
+                      <td data-label="Fecha" className="mov-fecha">
                         {new Date(m.created_at).toLocaleString("es-EC")}
                       </td>
-                      <td>{m.accesorio}</td>
-                      <td>
+                      <td data-label="Accesorio">{m.accesorio}</td>
+                      <td data-label="Código">
                         <code className="rep-codigo">{m.codigo}</code>
                       </td>
-                      <td>
+                      <td data-label="Tipo">
                         <span className={`badge badge--${m.tipo}`}>
                           {m.tipo}
                         </span>
                       </td>
-                      <td className="mov-cantidad">
+                      <td data-label="Cantidad" className="mov-cantidad">
                         {m.tipo === "ingreso" ? "+" : "−"}
                         {m.cantidad}
                       </td>
-                      <td>{m.stock_anterior}</td>
-                      <td>
+                      <td data-label="Stock Ant.">{m.stock_anterior}</td>
+                      <td data-label="Stock Nuevo">
                         <strong>{m.stock_nuevo}</strong>
                       </td>
-                      <td>{m.usuario}</td>
+                      <td data-label="Usuario">{m.usuario}</td>
                     </tr>
                   ))}
                   {movimientos.length === 0 && (

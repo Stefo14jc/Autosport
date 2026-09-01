@@ -236,20 +236,20 @@ export default function Reportes() {
                   <tbody>
                     {diario.porUsuario.map((u, i) => (
                       <tr key={i}>
-                        <td>{u.usuario}</td>
-                        <td>
+                        <td data-label="Usuario">{u.usuario}</td>
+                        <td data-label="Rol">
                           <span className={`rol-badge rol-badge--${u.rol}`}>
                             {u.rol}
                           </span>
                         </td>
-                        <td>{u.movimientos}</td>
-                        <td style={{ color: "var(--green)", fontWeight: 600 }}>
+                        <td data-label="Movimientos">{u.movimientos}</td>
+                        <td data-label="Ingresos" style={{ color: "var(--green)", fontWeight: 600 }}>
                           +{u.ingresos}
                         </td>
-                        <td style={{ color: "var(--red)", fontWeight: 600 }}>
+                        <td data-label="Salidas" style={{ color: "var(--red)", fontWeight: 600 }}>
                           −{u.salidas}
                         </td>
-                        <td
+                        <td data-label="Último registro"
                           style={{
                             fontSize: "12px",
                             color: "var(--text-muted)",
@@ -354,40 +354,40 @@ export default function Reportes() {
                 <tbody>
                   {datos.map((d) => (
                     <tr key={d.id}>
-                      <td className="mov-fecha">
+                      <td data-label="Fecha" className="mov-fecha">
                         {new Date(d.created_at).toLocaleString("es-EC")}
                       </td>
-                      <td>{d.accesorio}</td>
-                      <td>
+                      <td data-label="Accesorio">{d.accesorio}</td>
+                      <td data-label="Código">
                         <code className="rep-codigo">{d.codigo}</code>
                       </td>
-                      <td>
+                      <td data-label="Tipo">
                         <span className={`badge badge--${d.tipo}`}>
                           {d.tipo}
                         </span>
                       </td>
-                      <td className="mov-cantidad">
+                      <td data-label="Cant." className="mov-cantidad">
                         {d.tipo === "ingreso" ? "+" : "−"}
                         {d.cantidad}
                       </td>
-                      <td>{d.stock_anterior}</td>
-                      <td>
+                      <td data-label="Stock Ant.">{d.stock_anterior}</td>
+                      <td data-label="Stock Nuevo">
                         <strong>{d.stock_nuevo}</strong>
                       </td>
-                      <td>
+                      <td data-label="Estado Stock">
                         <StockBar
                           actual={parseInt(d.stock_actual)}
                           minimo={parseInt(d.stock_minimo)}
                         />
                       </td>
-                      <td className="rep-motivo">
+                      <td data-label="Motivo" className="rep-motivo">
                         {d.motivo || (
                           <span className="rep-sin-motivo">
                             Sin descripción
                           </span>
                         )}
                       </td>
-                      <td>{d.usuario}</td>
+                      <td data-label="Usuario">{d.usuario}</td>
                     </tr>
                   ))}
                   {datos.length === 0 && (

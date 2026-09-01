@@ -195,11 +195,11 @@ export default function Dashboard() {
                       <tbody>
                         {filtResultados.map((a) => (
                           <tr key={a.id}>
-                            <td>
+                            <td data-label="Código">
                               <code className="rep-codigo">{a.codigo}</code>
                             </td>
-                            <td>{a.nombre}</td>
-                            <td>
+                            <td data-label="Nombre">{a.nombre}</td>
+                            <td data-label="Stock">
                               <span
                                 style={{
                                   color:
@@ -211,8 +211,8 @@ export default function Dashboard() {
                                 {a.stock_actual}
                               </span>
                             </td>
-                            <td>{a.categoria || "—"}</td>
-                            <td>{a.ubicacion || "—"}</td>
+                            <td data-label="Categoría">{a.categoria || "—"}</td>
+                            <td data-label="Ubicación">{a.ubicacion || "—"}</td>
                           </tr>
                         ))}
                       </tbody>
@@ -240,13 +240,13 @@ export default function Dashboard() {
               <tbody>
                 {stats?.ultimos_movimientos?.map((m, i) => (
                   <tr key={i}>
-                    <td>{m.accesorio}</td>
-                    <td>
+                    <td data-label="Accesorio">{m.accesorio}</td>
+                    <td data-label="Tipo">
                       <span className={`badge badge--${m.tipo}`}>{m.tipo}</span>
                     </td>
-                    <td>{m.cantidad}</td>
-                    <td>{m.usuario}</td>
-                    <td>{new Date(m.created_at).toLocaleString("es-EC")}</td>
+                    <td data-label="Cantidad">{m.cantidad}</td>
+                    <td data-label="Usuario">{m.usuario}</td>
+                    <td data-label="Fecha">{new Date(m.created_at).toLocaleString("es-EC")}</td>
                   </tr>
                 ))}
               </tbody>

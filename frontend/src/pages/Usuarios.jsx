@@ -86,15 +86,15 @@ export default function Usuarios() {
               <tbody>
                 {usuarios.map(u => (
                   <tr key={u.id}>
-                    <td>{u.nombre}</td>
-                    <td>{u.email}</td>
-                    <td><span className={`rol-badge rol-badge--${u.rol}`}>{u.rol}</span></td>
-                    <td>
+                    <td data-label="Nombre">{u.nombre}</td>
+                    <td data-label="Email">{u.email}</td>
+                    <td data-label="Rol"><span className={`rol-badge rol-badge--${u.rol}`}>{u.rol}</span></td>
+                    <td data-label="Estado">
                       <span className={`badge ${u.activo ? 'badge--ingreso' : 'badge--salida'}`}>
                         {u.activo ? 'Activo' : 'Inactivo'}
                       </span>
                     </td>
-                    <td>
+                    <td data-label="Acciones">
                       <div className="rep-actions">
                         <button className="btn btn--ghost btn--sm" onClick={() => abrirEditar(u)}>✏ Editar</button>
                         <button className="btn btn--danger btn--sm" onClick={() => handleToggle(u)}>
