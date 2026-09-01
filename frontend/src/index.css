@@ -395,6 +395,14 @@ textarea {
     border: none;
     border-radius: 0;
   }
+  .rep-table-wrap,
+  .dash-table-wrap,
+  .dash-filtros__tabla-wrap {
+    overflow-x: unset;
+    background: transparent;
+    border: none;
+    border-radius: 0;
+  }
 
   .rep-toolbar {
     flex-direction: column;
