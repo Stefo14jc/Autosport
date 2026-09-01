@@ -5,11 +5,6 @@ import { useTheme } from "../context/ThemeContext";
 import "./Login.css";
 import LogoCarro from "./LogoCarro";
 
-const QUICK = [
-  { label: " Admin", email: "admin@autosport.com", password: "admin123" },
-  { label: " Bodeguero", email: "bodega@autosport.com", password: "bodega123" },
-];
-
 export default function Login() {
   const [form, setForm] = useState({ email: "", password: "" });
   const [error, setError] = useState("");
@@ -33,7 +28,7 @@ export default function Login() {
     setLoading(true);
     setError("");
     try {
-      await login(emailToAuth, passwordToAuth);
+      await login(emailToAuth || form.email, passwordToAuth || form.password);
       const from = location.state?.from || "/dashboard";
       navigate(from);
     } catch (err) {
@@ -107,26 +102,6 @@ export default function Login() {
           <p className="login__subtitle">Sistema de Gestión de Accesorios</p>
         </div>
 
-        <div className="login__quick">
-          <p className="login__quick-label">Acceso rápido</p>
-          <div className="login__quick-btns">
-            {QUICK.map((q) => (
-              <button
-                key={q.label}
-                type="button"
-                className="login__quick-btn"
-                onClick={(e) => handleSubmit(e, q.email, q.password)}
-                disabled={loading || bloqueado}>
-                {q.label}
-              </button>
-            ))}
-          </div>
-        </div>
-
-        <div className="login__divider">
-          <span>o ingresa manualmente</span>
-        </div>
-
         <form
           className="login__form"
           onSubmit={(e) => handleSubmit(e, form.email, form.password)}>
@@ -138,6 +113,7 @@ export default function Login() {
               value={form.email}
               onChange={handleChange}
               placeholder="username / usuario@autosport.com"
+              required
             />
           </div>
           <div className="login__field">
