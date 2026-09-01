@@ -41,16 +41,12 @@ export default function Accesorios() {
   const [qrTarget, setQrTarget] = useState(null);
   const [scannerOpen, setScannerOpen] = useState(false);
   const [stockModal, setStockModal] = useState(null);
-
-  // NUEVO ESTADO: Controla la impresión masiva
   const [isPrintingAll, setIsPrintingAll] = useState(false);
-
   const [movForm, setMovForm] = useState({
     tipo: "ingreso",
     cantidad: "",
     motivo: "",
   });
-
   const [error, setError] = useState("");
   const [saving, setSaving] = useState(false);
   const [categorias, setCategorias] = useState([]);
@@ -74,7 +70,6 @@ export default function Accesorios() {
       .catch(() => setUbicaciones([]));
   }, []);
 
-  // El buscador filtra los accesorios que se muestran en la tabla Y los que se van a imprimir
   const accesoriosFiltrados = accesorios.filter(
     (r) =>
       r.nombre.toLowerCase().includes(busqueda.toLowerCase()) ||
@@ -116,24 +111,20 @@ export default function Accesorios() {
       setSaving(false);
       return;
     }
-
     const stockVal = parseInt(form.stock_actual);
     const minimoVal = parseInt(form.stock_minimo);
-
     if (isNaN(stockVal) || stockVal < 0) {
       setError("El stock no puede ser negativo.");
       setSaving(false);
       return;
     }
-
     if (stockVal < minimoVal) {
       setError(
-        `El stock asignado (${stockVal}) no puede ser menor que el stock mínimo (${minimoVal}).`,
+        `El stock (${stockVal}) no puede ser menor que el stock mínimo (${minimoVal}).`,
       );
       setSaving(false);
       return;
     }
-
     try {
       const catId =
         form.categoria_id === "" || form.categoria_id === null
@@ -143,7 +134,6 @@ export default function Accesorios() {
         form.ubicacion_id === "" || form.ubicacion_id === null
           ? null
           : parseInt(form.ubicacion_id);
-
       const payload = {
         ...form,
         categoria_id: catId,
@@ -151,13 +141,10 @@ export default function Accesorios() {
         stock_actual: stockVal,
         stock_minimo: minimoVal,
       };
-
       const nombreCat = categorias.find((c) => c.id === catId)?.nombre || "—";
       const nombreUbi = ubicaciones.find((u) => u.id === ubiId)?.nombre || "—";
-
       if (editando) {
         const actualizado = await actualizarAccesorio(editando, payload);
-
         setAccesorios((prev) =>
           prev.map((a) =>
             a.id === editando
@@ -176,7 +163,6 @@ export default function Accesorios() {
         await crearAccesorio(payload);
         fetchAccesorios();
       }
-
       setModal(null);
     } catch (e) {
       setError(e.response?.data?.error || "Error al guardar");
@@ -249,18 +235,15 @@ export default function Accesorios() {
     }
   };
 
-  // NUEVA FUNCIÓN: Maneja la impresión masiva de QRs basada en los filtros
   const handleImprimirPlanilla = () => {
     if (accesoriosFiltrados.length === 0) {
       alert("No hay accesorios en pantalla para imprimir.");
       return;
     }
-    // Activamos la vista de impresión (muestra el contenedor oculto)
     setIsPrintingAll(true);
-    // Damos un breve tiempo (800ms) para que React dibuje los QRs antes de abrir la ventana de impresión
     setTimeout(() => {
       window.print();
-      setIsPrintingAll(false); // Oculta la vista después de imprimir o cancelar
+      setIsPrintingAll(false);
     }, 800);
   };
 
@@ -278,11 +261,7 @@ export default function Accesorios() {
             />
           </div>
           <div className="rep-toolbar__actions">
-            {/* NUEVO BOTÓN PARA IMPRIMIR PLANILLA */}
-            <button
-              className="btn btn--ghost"
-              onClick={handleImprimirPlanilla}
-              title="Imprime los QRs que se muestran actualmente en la tabla">
+            <button className="btn btn--ghost" onClick={handleImprimirPlanilla}>
               Imprimir QRs
             </button>
             <button
@@ -317,20 +296,22 @@ export default function Accesorios() {
               <tbody>
                 {accesoriosFiltrados.map((r) => (
                   <tr key={r.id}>
-                    <td>
+                    <td data-label="Código">
                       <code className="rep-codigo">{r.codigo}</code>
                     </td>
-                    <td>{r.nombre}</td>
-                    <td>{r.categoria || "—"}</td>
-                    <td>${parseFloat(r.precio_unitario).toFixed(2)}</td>
-                    <td>
+                    <td data-label="Nombre">{r.nombre}</td>
+                    <td data-label="Categoría">{r.categoria || "—"}</td>
+                    <td data-label="Precio">
+                      ${parseFloat(r.precio_unitario).toFixed(2)}
+                    </td>
+                    <td data-label="Stock">
                       <StockBar
                         actual={parseInt(r.stock_actual)}
                         minimo={parseInt(r.stock_minimo)}
                       />
                     </td>
-                    <td>{r.ubicacion || "—"}</td>
-                    <td>
+                    <td data-label="Ubicación">{r.ubicacion || "—"}</td>
+                    <td data-label="Acciones">
                       <div className="rep-actions">
                         <button
                           className="btn btn--ghost btn--sm"
@@ -407,7 +388,6 @@ export default function Accesorios() {
                   />
                 </div>
               )}
-
               <div className="form-field">
                 <label>Nombre</label>
                 <input
@@ -417,17 +397,11 @@ export default function Accesorios() {
                   onChange={handleFormChange}
                 />
               </div>
-
-              <div className="form-field" key="precio_unitario">
+              <div className="form-field">
                 <label>Precio Unitario</label>
                 <div
-                  className="input-prefix-wrap"
                   style={{ display: "flex", alignItems: "center", gap: "5px" }}>
-                  <span
-                    className="input-prefix-wrap__symbol"
-                    style={{ fontWeight: "bold" }}>
-                    $
-                  </span>
+                  <span style={{ fontWeight: "bold" }}>$</span>
                   <input
                     name="precio_unitario"
                     type="number"
@@ -471,7 +445,6 @@ export default function Accesorios() {
                   ))}
                 </select>
               </div>
-
               <div className="form-field">
                 <label>Ubicación</label>
                 <select
@@ -486,7 +459,6 @@ export default function Accesorios() {
                   ))}
                 </select>
               </div>
-
               <div className="form-field rep-form-grid--full">
                 <label>Descripción</label>
                 <textarea
@@ -513,7 +485,6 @@ export default function Accesorios() {
         </div>
       )}
 
-      {/* MODAL PARA IMPRESIÓN INDIVIDUAL */}
       {modal === "qr" && qrTarget && (
         <div className="modal-overlay" onClick={() => setModal(null)}>
           <div className="modal" onClick={(e) => e.stopPropagation()}>
@@ -547,14 +518,12 @@ export default function Accesorios() {
             <div className="stock-modal-info">
               <p className="stock-modal-name">{stockModal.nombre}</p>
               <p className="stock-modal-code">{stockModal.codigo}</p>
-
               <div
-                className="stock-modal-extra"
                 style={{
                   margin: "12px 0",
                   padding: "10px 14px",
                   borderRadius: "8px",
-                  backgroundColor: "rgba(255, 255, 255, 0.05)",
+                  backgroundColor: "rgba(255,255,255,0.05)",
                   fontSize: "0.88rem",
                   textAlign: "left",
                   display: "flex",
@@ -574,7 +543,6 @@ export default function Accesorios() {
                   {parseFloat(stockModal.precio_unitario || 0).toFixed(2)}
                 </div>
               </div>
-
               <p className="stock-modal-current">
                 Stock actual: <strong>{stockModal.stock_actual}</strong>
               </p>
@@ -589,7 +557,6 @@ export default function Accesorios() {
                 </button>
               ))}
             </div>
-
             <div className="stock-cantidad-wrap">
               <button
                 className="stock-cant-btn"
@@ -655,7 +622,7 @@ export default function Accesorios() {
         <div className="modal-overlay" onClick={() => setScannerOpen(false)}>
           <div className="modal" onClick={(e) => e.stopPropagation()}>
             <div className="modal__header">
-              <h2 className="modal__title"> Escanear QR</h2>
+              <h2 className="modal__title">Escanear QR</h2>
               <button
                 className="modal__close"
                 onClick={() => setScannerOpen(false)}>
@@ -667,41 +634,19 @@ export default function Accesorios() {
         </div>
       )}
 
-      {/* CONTENEDOR INVISIBLE: Solo se activa y renderiza cuando presionas "Imprimir QRs" */}
       {isPrintingAll && (
         <div className="print-grid-container">
-          {/* Estilos inyectados específicamente para la impresión en cuadrícula */}
           <style>{`
             @media print {
-              /* Oculta la página principal para que no salga en la impresión */
               body * { visibility: hidden; }
-              
-              /* Muestra únicamente nuestro contenedor de QRs y sus hijos */
-              .print-grid-container, .print-grid-container * {
-                visibility: visible;
-              }
-              
+              .print-grid-container, .print-grid-container * { visibility: visible; }
               .print-grid-container {
-                position: absolute;
-                left: 0;
-                top: 0;
-                width: 100%;
-                display: grid;
-                grid-template-columns: repeat(4, 1fr); /* 4 QRs por fila */
-                gap: 10px;
-                justify-items: center;
+                position: absolute; left: 0; top: 0; width: 100%;
+                display: grid; grid-template-columns: repeat(4, 1fr); gap: 10px; justify-items: center;
               }
-              
-              .qr-print-item {
-                border: 1px dashed #ccc;
-                padding: 15px;
-                page-break-inside: avoid; /* Evita que un QR se corte a la mitad en 2 hojas */
-                text-align: center;
-              }
+              .qr-print-item { border: 1px dashed #ccc; padding: 15px; page-break-inside: avoid; text-align: center; }
             }
           `}</style>
-
-          {/* Renderiza todos los QRs de la lista actual filtrada */}
           {accesoriosFiltrados.map((acc) => (
             <div key={acc.id} className="qr-print-item">
               <QRGenerator accesorio={acc} />
