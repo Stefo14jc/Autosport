@@ -28,3 +28,22 @@
   margin-bottom: 14px;
 }
 .dash-table-wrap { overflow-x: auto; }
+@media (max-width: 768px) {
+  /* Obliga a la tabla a leer el data-label y ponerlo a la izquierda */
+  .data-table td::before {
+    content: attr(data-label);
+    float: left;
+    font-weight: 600;
+    color: var(--text-muted, #94a3b8);
+    text-transform: uppercase;
+    font-size: 11px;
+  }
+  
+  /* Alinea el valor real (la base de datos) a la derecha */
+  .dash-table-wrap .data-table td,
+  .dash-filtros__tabla-wrap .data-table td {
+    display: block;
+    text-align: right;
+    clear: both;
+  }
+}
