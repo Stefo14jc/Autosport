@@ -345,90 +345,52 @@ textarea {
   padding-top: 18px;
 }
 @media (max-width: 768px) {
-  .page__body {
-    padding: 16px;
-  }
-
   .data-table thead {
-    display: none;
+    display: none !important;
   }
 
   .data-table tbody tr {
-    display: block;
-    background: var(--card);
-    border: 1px solid var(--border);
-    border-radius: 10px;
-    margin-bottom: 12px;
-    padding: 14px;
+    display: block !important;
+    background: var(--card) !important;
+    border: 1px solid var(--border) !important;
+    border-radius: 10px !important;
+    margin-bottom: 12px !important;
+    padding: 12px 14px !important;
   }
 
   .data-table tbody td {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    padding: 7px 0;
-    border: none;
-    font-size: 13px;
-    border-bottom: 1px solid var(--border);
-    gap: 8px;
+    display: flex !important;
+    justify-content: space-between !important;
+    align-items: center !important;
+    padding: 8px 0 !important;
+    border: none !important;
+    border-bottom: 1px solid var(--border) !important;
+    font-size: 13px !important;
+    gap: 12px !important;
+    text-align: right !important;
   }
 
   .data-table tbody td:last-child {
-    border-bottom: none;
-    padding-top: 10px;
+    border-bottom: none !important;
   }
 
+  /* Etiqueta izquierda */
   .data-table tbody td::before {
-    content: attr(data-label);
-    font-weight: 600;
-    color: var(--text-muted);
-    font-size: 11px;
-    text-transform: uppercase;
-    letter-spacing: 0.5px;
-    flex-shrink: 0;
-    min-width: 80px;
+    content: attr(data-label) !important;
+    font-weight: 600 !important;
+    color: var(--text-muted) !important;
+    font-size: 11px !important;
+    text-transform: uppercase !important;
+    letter-spacing: 0.5px !important;
+    flex-shrink: 0 !important;
+    text-align: left !important;
   }
 
-  .rep-table-wrap {
-    overflow-x: unset;
-    background: transparent;
-    border: none;
-    border-radius: 0;
-  }
-  .rep-table-wrap,
-  .dash-table-wrap,
-  .dash-filtros__tabla-wrap {
-    overflow-x: unset;
-    background: transparent;
-    border: none;
-    border-radius: 0;
-  }
-
-  .rep-toolbar {
-    flex-direction: column;
-    align-items: stretch;
-  }
-  .rep-toolbar__actions {
-    flex-wrap: wrap;
-  }
-  .rep-toolbar__actions .btn {
-    flex: 1;
-    text-align: center;
-    font-size: 12px;
-  }
-
-  .rep-form-grid {
-    grid-template-columns: 1fr;
-  }
-  .rep-form-grid--full {
-    grid-column: 1;
-  }
-
-  .dash-filtros__controles {
-    flex-direction: column;
-  }
-  .dash-filtros__sep {
-    display: none;
+  /* Fuerza que el texto o badges de la derecha no desborden */
+  .data-table tbody td > * {
+    max-width: 65%;
+    word-break: break-word;
+    text-align: right;
   }
 }
 @media print {
