@@ -3,7 +3,6 @@ import { useNavigate, useLocation, Link } from "react-router-dom";
 import { useAuth } from "../context/AuthContext";
 import { useTheme } from "../context/ThemeContext";
 import api from "../api/axiosClient";
-import QRScanner from "../components/qr/QRScanner";
 import LogoCarro from "./LogoCarro";
 import "./Login.css";
 
@@ -15,9 +14,8 @@ export default function Login() {
   const [bloqueado, setBloqueado] = useState(false);
   const [segRestantes, setSegRestantes] = useState(0);
 
-  // Estados para contador público y escáner
+  // Estado para el contador público de accesorios
   const [totalProductos, setTotalProductos] = useState(null);
-  const [scannerOpen, setScannerOpen] = useState(false);
 
   const { login } = useAuth();
   const { theme, toggleTheme } = useTheme();
@@ -25,7 +23,7 @@ export default function Login() {
   const location = useLocation();
 
   useEffect(() => {
-    // Cargar número total de productos en catálogo
+    // Consulta pública del total de repuestos/accesorios
     api
       .get("/accesorios/public-count")
       .then((res) => setTotalProductos(res.data.total))
@@ -86,11 +84,6 @@ export default function Login() {
     }
   };
 
-  const handleQrScaneado = (id) => {
-    setScannerOpen(false);
-    navigate(`/scan/${id}`);
-  };
-
   return (
     <div className="login">
       <video
@@ -104,18 +97,9 @@ export default function Login() {
       <div className="login__overlay" />
 
       <div className="login__card">
-        <div className="login__top-bar">
+        <div className="login__top-bar" style={{ justifyContent: "flex-end" }}>
           <button className="login__theme" onClick={toggleTheme} type="button">
             {theme === "dark" ? "Modo Claro" : "Modo Oscuro"}
-          </button>
-          
-          <button 
-            type="button" 
-            className="login__qr-btn" 
-            onClick={() => setScannerOpen(true)}
-            title="Escanear Código QR"
-          >
-            📷 Escanear QR
           </button>
         </div>
 
@@ -132,7 +116,7 @@ export default function Login() {
 
           {totalProductos !== null && (
             <div className="login__counter-badge">
-              Catálogo: <strong>{totalProductos}</strong> accesorios registrados
+              📦 Catálogo: <strong>{totalProductos}</strong> accesorios registrados
             </div>
           )}
         </div>
@@ -222,23 +206,6 @@ export default function Login() {
           </button>
         </form>
       </div>
-
-      {/* MODAL ESCÁNER QR DESDE EL LOGIN */}
-      {scannerOpen && (
-        <div className="modal-overlay" onClick={() => setScannerOpen(false)}>
-          <div className="modal" onClick={(e) => e.stopPropagation()}>
-            <div className="modal__header">
-              <h2 className="modal__title">Escanear QR de Accesorio</h2>
-              <button
-                className="modal__close"
-                onClick={() => setScannerOpen(false)}>
-                ✕
-              </button>
-            </div>
-            <QRScanner onScanned={handleQrScaneado} />
-          </div>
-        </div>
-      )}
     </div>
   );
 }

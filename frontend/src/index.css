@@ -420,3 +420,9 @@ textarea {
     background: white;
   }
 }
+@media (min-width: 769px) {
+  .sidebar--collapsed ~ * .page,
+  .sidebar--collapsed + * .page {
+    margin-left: 72px;
+  }
+}

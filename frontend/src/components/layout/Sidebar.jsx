@@ -4,6 +4,14 @@ import { useAuth } from '../../context/AuthContext'
 import LogoCarro from '../../pages/LogoCarro'
 import './Sidebar.css'
 
+const ICONS = {
+  '/dashboard':   '▦',
+  '/accesorios':  '⚙',
+  '/movimientos': '↕',
+  '/reportes':    '📊',
+  '/usuarios':    '👤',
+}
+
 const NAV = [
   { to: '/dashboard',   label: 'Dashboard',   roles: ['admin', 'bodeguero'] },
   { to: '/accesorios',  label: 'Accesorios',  roles: ['admin', 'bodeguero'] },
@@ -17,9 +25,9 @@ export default function Sidebar() {
   const navigate = useNavigate()
   const location = useLocation()
   const [open, setOpen] = useState(false)
+  const [collapsed, setCollapsed] = useState(false)
 
   useEffect(() => { setOpen(false) }, [location.pathname])
-
   useEffect(() => {
     document.body.style.overflow = open ? 'hidden' : ''
     return () => { document.body.style.overflow = '' }
@@ -27,11 +35,18 @@ export default function Sidebar() {
 
   const handleLogout = () => { logout(); navigate('/login') }
 
-  const sidebarContent = (
+  const sidebarContent = (isMobile = false) => (
     <>
-      <div className="sidebar__brand">
-        <LogoCarro className="sidebar__logo-svg" style={{ width: '80px', height: 'auto' }} />
-        <span className="sidebar__title">AUTO<span>SPORT</span></span>
+      <div className={`sidebar__brand${collapsed && !isMobile ? ' sidebar__brand--collapsed' : ''}`}>
+        <LogoCarro style={{ width: collapsed && !isMobile ? '36px' : '56px', height: 'auto', transition: 'width 0.3s ease', flexShrink: 0 }} />
+        {(!collapsed || isMobile) && (
+          <span className="sidebar__title">AUTO<span>SPORT</span></span>
+        )}
+        {!isMobile && (
+          <button className="sidebar__collapse-btn" onClick={() => setCollapsed(c => !c)} title={collapsed ? 'Expandir' : 'Colapsar'}>
+            {collapsed ? '»' : '«'}
+          </button>
+        )}
       </div>
 
       <nav className="sidebar__nav">
@@ -39,22 +54,31 @@ export default function Sidebar() {
           <NavLink
             key={n.to}
             to={n.to}
-            className={({ isActive }) => `sidebar__link${isActive ? ' sidebar__link--active' : ''}`}
+            title={n.label}
+            className={({ isActive }) => `sidebar__link${isActive ? ' sidebar__link--active' : ''}${collapsed && !isMobile ? ' sidebar__link--icon-only' : ''}`}
           >
-            {n.label}
+            <span className="sidebar__icon">{ICONS[n.to]}</span>
+            {(!collapsed || isMobile) && <span className="sidebar__link-label">{n.label}</span>}
           </NavLink>
         ))}
       </nav>
 
-      <div className="sidebar__footer">
+      <div className={`sidebar__footer${collapsed && !isMobile ? ' sidebar__footer--collapsed' : ''}`}>
         <div className="sidebar__user">
           <div className="sidebar__avatar">{usuario?.nombre?.[0]}</div>
-          <div>
-            <p className="sidebar__user-name">{usuario?.nombre}</p>
-            <p className="sidebar__user-role">{usuario?.rol}</p>
-          </div>
+          {(!collapsed || isMobile) && (
+            <div className="sidebar__user-info">
+              <p className="sidebar__user-name">{usuario?.nombre}</p>
+              <p className="sidebar__user-role">{usuario?.rol}</p>
+            </div>
+          )}
         </div>
-        <button className="sidebar__logout" onClick={handleLogout}>Cerrar sesión</button>
+        {(!collapsed || isMobile) && (
+          <button className="sidebar__logout" onClick={handleLogout}>Cerrar sesión</button>
+        )}
+        {collapsed && !isMobile && (
+          <button className="sidebar__logout sidebar__logout--icon" onClick={handleLogout} title="Cerrar sesión">⏻</button>
+        )}
       </div>
     </>
   )
@@ -63,64 +87,21 @@ export default function Sidebar() {
     <>
       <header className="mobile-header">
         <div className="mobile-header__brand">
-          <LogoCarro style={{ width: '48px', height: 'auto' }} />
+          <LogoCarro style={{ width: '42px', height: 'auto' }} />
           <span className="sidebar__title">AUTO<span>SPORT</span></span>
         </div>
-        <button
-          className="mobile-header__hamburger"
-          onClick={() => setOpen(true)}
-          aria-label="Abrir menú"
-        >☰</button>
+        <button className="mobile-header__hamburger" onClick={() => setOpen(true)} aria-label="Abrir menú">☰</button>
       </header>
 
-      <aside className="sidebar sidebar--desktop">
-        {sidebarContent}
+      <aside className={`sidebar sidebar--desktop${collapsed ? ' sidebar--collapsed' : ''}`}>
+        {sidebarContent(false)}
       </aside>
 
-      {open && (
-        <div
-          onClick={() => setOpen(false)}
-          style={{
-            position: 'fixed',
-            inset: 0,
-            background: 'rgba(0,0,0,0.7)',
-            zIndex: 110,
-          }}
-        />
-      )}
+      {open && <div className="sidebar-overlay" onClick={() => setOpen(false)} />}
 
-<aside
-  style={{
-    position: 'fixed',
-    top: 0,
-    left: 0,
-    height: '100vh',
-    width: '280px',
-    background: 'var(--surface)',
-    borderRight: '1px solid var(--border)',
-    display: 'flex',
-    flexDirection: 'column',
-    justifyContent: 'space-between',  
-    zIndex: 120,
-    transform: open ? 'translateX(0)' : 'translateX(-100%)',
-    transition: 'transform 0.28s ease',
-    overflowY: 'auto',
-  }}
-
-      >
-        <button
-          onClick={() => setOpen(false)}
-          style={{
-            alignSelf: 'flex-end',
-            background: 'none',
-            border: 'none',
-            color: 'var(--text-muted)',
-            fontSize: '22px',
-            cursor: 'pointer',
-            padding: '16px 16px 0',
-          }}
-        >✕</button>
-        {sidebarContent}
+      <aside className={`sidebar sidebar--mobile${open ? ' sidebar--mobile-open' : ''}`}>
+        <button className="sidebar__close" onClick={() => setOpen(false)}>✕</button>
+        {sidebarContent(true)}
       </aside>
     </>
   )
