@@ -21,7 +21,8 @@ exports.login = async (req, res) => {
   const { email, password } = req.body
   if (!email || !password) return res.status(400).json({ error: 'Credenciales requeridas' })
 
-  const key = email.toLowerCase()
+  const key = email.trim().toLowerCase()
+  const passLimpia = password.trim()
   const ahora = Date.now()
 
   if (intentos[key]) {
@@ -34,11 +35,11 @@ exports.login = async (req, res) => {
 
   try {
     const { rows } = await pool.query(
-      `SELECT * FROM usuarios WHERE (email = $1 OR LOWER(nombre) = LOWER($1)) AND activo = TRUE`,
+      `SELECT * FROM usuarios WHERE (LOWER(email) = LOWER($1) OR LOWER(nombre) = LOWER($1)) AND activo = TRUE`,
       [key]
     )
     const usuario = rows[0]
-    const valido = usuario && await bcrypt.compare(password, usuario.password)
+    const valido = usuario && await bcrypt.compare(passLimpia, usuario.password)
 
     if (!valido) {
       if (!intentos[key]) intentos[key] = { count: 0 }
@@ -130,7 +131,9 @@ exports.restablecerPassword = async (req, res) => {
     return res.status(400).json({ error: 'Token y nueva contraseña requeridos' })
   }
 
-  if (password.length < 6) {
+  const passLimpia = password.trim()
+
+  if (passLimpia.length < 6) {
     return res.status(400).json({ error: 'La contraseña debe tener al menos 6 caracteres' })
   }
 
@@ -145,12 +148,16 @@ exports.restablecerPassword = async (req, res) => {
       return res.status(400).json({ error: 'El enlace es inválido o ha expirado.' })
     }
 
-    const hashedPassword = await bcrypt.hash(password, 10)
+    const hashedPassword = await bcrypt.hash(passLimpia, 10)
 
     await pool.query(
       'UPDATE usuarios SET password = $1, reset_token = NULL, reset_token_expires = NULL WHERE id = $2',
       [hashedPassword, usuario.id]
     )
+
+    // Limpiar bloqueos o intentos acumulados en memoria para este usuario
+    if (usuario.email) delete intentos[usuario.email.trim().toLowerCase()]
+    if (usuario.nombre) delete intentos[usuario.nombre.trim().toLowerCase()]
 
     res.json({ message: 'Contraseña actualizada correctamente. Ya puedes iniciar sesión.' })
   } catch (err) {
