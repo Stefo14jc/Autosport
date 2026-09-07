@@ -40,7 +40,7 @@ export default function QRScanner({ onScanned }) {
       const cached = localStorage.getItem("cache_accesorios");
       if (cached) {
         const lista = JSON.parse(cached);
-        const encontrado = lista.find((a) => a.id === id);
+        const encontrado = lista.find((a) => String(a.id) === String(id) || a.codigo === id);
         if (encontrado) {
           setAccesorio(encontrado);
           setEstado("info");
@@ -147,7 +147,7 @@ export default function QRScanner({ onScanned }) {
 
       {estado === "info" && accesorio && (
         <div className="qrscanner__preview">
-          {/* Cabecera centrada similar al Ajuste de Stock */}
+          {/* Cabecera centrada */}
           <div className="qrscanner__preview-header">
             <h3 className="qrscanner__title">{accesorio.nombre}</h3>
             <span className="qrscanner__code">{accesorio.codigo}</span>
@@ -181,12 +181,37 @@ export default function QRScanner({ onScanned }) {
             </div>
           </div>
 
-          {/* Botones apilados con el mismo estilo */}
+          {/* Sección: Últimos 5 Movimientos */}
+          <div className="qrscanner__movs-container">
+            <h4 className="qrscanner__movs-title">Últimos Movimientos</h4>
+            {accesorio.ultimos_movimientos && accesorio.ultimos_movimientos.length > 0 ? (
+              <div className="qrscanner__movs-list">
+                {accesorio.ultimos_movimientos.map((m) => (
+                  <div key={m.id} className="qrscanner__mov-item">
+                    <div className="qrscanner__mov-header">
+                      <span className={`qrscanner__mov-badge qrscanner__mov-badge--${m.tipo}`}>
+                        {m.tipo === "ingreso" ? "▲ + " : "▼ - "}{m.cantidad}
+                      </span>
+                      <span className="qrscanner__mov-user">{m.usuario || "Usuario"}</span>
+                    </div>
+                    <div className="qrscanner__mov-sub">
+                      <span>{new Date(m.created_at).toLocaleString("es-EC", { dateStyle: "short", timeStyle: "short" })}</span>
+                      {m.motivo && <span className="qrscanner__mov-motivo"> • {m.motivo}</span>}
+                    </div>
+                  </div>
+                ))}
+              </div>
+            ) : (
+              <p className="qrscanner__movs-empty">Sin movimientos registrados</p>
+            )}
+          </div>
+
+          {/* Botones de acción */}
           <div className="qrscanner__actions-stack">
             <button
               className="btn btn--primary btn--full"
               onClick={() => onScanned(accesorio.id)}>
-              Confirmar Selección
+              Ajustar Stock
             </button>
             <button className="btn btn--ghost btn--full" onClick={reintentar}>
               Escanear otro

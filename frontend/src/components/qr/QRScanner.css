@@ -172,3 +172,77 @@
   justify-content: center;
   align-items: center;
 }
+/* Lista de últimos movimientos */
+.qrscanner__movs-container {
+  margin-top: 14px;
+  background: rgba(255, 255, 255, 0.03);
+  border-radius: 8px;
+  padding: 12px;
+  border: 1px solid rgba(255, 255, 255, 0.08);
+}
+
+.qrscanner__movs-title {
+  font-size: 0.82rem;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  color: var(--text-muted);
+  margin-bottom: 10px;
+}
+
+.qrscanner__movs-list {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  max-height: 180px;
+  overflow-y: auto;
+}
+
+.qrscanner__mov-item {
+  display: flex;
+  flex-direction: column;
+  background: rgba(0, 0, 0, 0.2);
+  padding: 8px 10px;
+  border-radius: 6px;
+}
+
+.qrscanner__mov-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.qrscanner__mov-badge {
+  font-weight: bold;
+  font-size: 0.85rem;
+  padding: 2px 6px;
+  border-radius: 4px;
+}
+
+.qrscanner__mov-badge--ingreso {
+  color: #10b981;
+  background: rgba(16, 185, 129, 0.15);
+}
+
+.qrscanner__mov-badge--salida {
+  color: #ef4444;
+  background: rgba(239, 68, 68, 0.15);
+}
+
+.qrscanner__mov-user {
+  font-size: 0.85rem;
+  color: var(--text-color);
+  font-weight: 500;
+}
+
+.qrscanner__mov-sub {
+  font-size: 0.75rem;
+  color: var(--text-muted);
+  margin-top: 2px;
+}
+
+.qrscanner__movs-empty {
+  font-size: 0.8rem;
+  color: var(--text-muted);
+  text-align: center;
+  margin: 6px 0;
+}
