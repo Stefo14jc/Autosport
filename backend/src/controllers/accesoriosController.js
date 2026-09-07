@@ -277,3 +277,13 @@ exports.filtrar = async (req, res) => {
     res.status(500).json({ error: err.message });
   }
 };
+exports.conteoPublico = async (req, res) => {
+  try {
+    const { rows } = await pool.query(
+      "SELECT COUNT(*) FROM accesorios WHERE activo = TRUE"
+    );
+    res.json({ total: parseInt(rows[0].count) });
+  } catch (err) {
+    res.status(500).json({ error: err.message });
+  }
+};
