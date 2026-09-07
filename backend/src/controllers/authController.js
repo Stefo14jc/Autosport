@@ -22,7 +22,7 @@ exports.login = async (req, res) => {
   if (!email || !password) return res.status(400).json({ error: 'Credenciales requeridas' })
 
   const key = email.trim().toLowerCase()
-  const passLimpia = password.trim()
+  const passLimpia = String(password).trim()
   const ahora = Date.now()
 
   if (intentos[key]) {
@@ -35,13 +35,22 @@ exports.login = async (req, res) => {
 
   try {
     const { rows } = await pool.query(
-      `SELECT * FROM usuarios WHERE (LOWER(email) = LOWER($1) OR LOWER(nombre) = LOWER($1)) AND activo = TRUE`,
+      `SELECT * FROM usuarios 
+       WHERE (LOWER(email) = LOWER($1) OR LOWER(nombre) = LOWER($1)) AND activo = TRUE 
+       ORDER BY created_at DESC LIMIT 1`,
       [key]
     )
     const usuario = rows[0]
-    const valido = usuario && await bcrypt.compare(passLimpia, usuario.password)
+
+    if (!usuario) {
+      console.log(`[LOGIN FAIL] Usuario no encontrado: ${key}`)
+      return res.status(401).json({ error: 'Credenciales inválidas' })
+    }
+
+    const valido = await bcrypt.compare(passLimpia, usuario.password)
 
     if (!valido) {
+      console.log(`[LOGIN FAIL] Contraseña incorrecta para el usuario ID: ${usuario.id}`)
       if (!intentos[key]) intentos[key] = { count: 0 }
       intentos[key].count++
       if (intentos[key].count >= 5) {
@@ -56,6 +65,7 @@ exports.login = async (req, res) => {
     const token = generarToken(usuario)
     res.json({ token, usuario: { id: usuario.id, nombre: usuario.nombre, email: usuario.email, rol: usuario.rol } })
   } catch (err) {
+    console.error('[LOGIN ERROR]', err)
     res.status(500).json({ error: err.message })
   }
 }
@@ -72,7 +82,6 @@ exports.me = async (req, res) => {
   }
 }
 
-// 1. SOLICITAR RECUPERACIÓN (Envía el correo)
 exports.solicitarRecuperacion = async (req, res) => {
   const { email } = req.body
   if (!email) return res.status(400).json({ error: 'Ingresa tu correo electrónico' })
@@ -88,7 +97,6 @@ exports.solicitarRecuperacion = async (req, res) => {
       return res.json({ message: 'Si el correo existe en el sistema, recibirás un enlace de recuperación.' })
     }
 
-    // Generar token único y expiración en 1 hora
     const resetToken = crypto.randomBytes(32).toString('hex')
     const resetExpires = new Date(Date.now() + 3600000)
 
@@ -123,7 +131,6 @@ exports.solicitarRecuperacion = async (req, res) => {
   }
 }
 
-// 2. RESTABLECER CONTRASEÑA (Recibe el token y la nueva clave)
 exports.restablecerPassword = async (req, res) => {
   const { token, password } = req.body
 
@@ -131,7 +138,7 @@ exports.restablecerPassword = async (req, res) => {
     return res.status(400).json({ error: 'Token y nueva contraseña requeridos' })
   }
 
-  const passLimpia = password.trim()
+  const passLimpia = String(password).trim()
 
   if (passLimpia.length < 6) {
     return res.status(400).json({ error: 'La contraseña debe tener al menos 6 caracteres' })
@@ -155,12 +162,15 @@ exports.restablecerPassword = async (req, res) => {
       [hashedPassword, usuario.id]
     )
 
-    // Limpiar bloqueos o intentos acumulados en memoria para este usuario
-    if (usuario.email) delete intentos[usuario.email.trim().toLowerCase()]
-    if (usuario.nombre) delete intentos[usuario.nombre.trim().toLowerCase()]
+    // Limpiar bloqueos acumulados en la memoria del servidor
+    for (const key in intentos) {
+      delete intentos[key]
+    }
 
+    console.log(`[PASSWORD RESET SUCCESS] Contraseña actualizada para usuario ID: ${usuario.id}`)
     res.json({ message: 'Contraseña actualizada correctamente. Ya puedes iniciar sesión.' })
   } catch (err) {
+    console.error('[RESET ERROR]', err)
     res.status(500).json({ error: err.message })
   }
 }
