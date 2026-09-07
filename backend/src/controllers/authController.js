@@ -1,6 +1,12 @@
 const bcrypt = require('bcryptjs')
-const jwt    = require('jsonwebtoken')
-const pool   = require('../config/db')
+const jwt = require('jsonwebtoken')
+const crypto = require('crypto')
+const sgMail = require('@sendgrid/mail')
+const pool = require('../config/db')
+
+if (process.env.SENDGRID_API_KEY) {
+  sgMail.setApiKey(process.env.SENDGRID_API_KEY)
+}
 
 const generarToken = (usuario) =>
   jwt.sign(
@@ -32,7 +38,7 @@ exports.login = async (req, res) => {
       [key]
     )
     const usuario = rows[0]
-    const valido  = usuario && await bcrypt.compare(password, usuario.password)
+    const valido = usuario && await bcrypt.compare(password, usuario.password)
 
     if (!valido) {
       if (!intentos[key]) intentos[key] = { count: 0 }
@@ -60,6 +66,93 @@ exports.me = async (req, res) => {
       [req.user.id]
     )
     res.json(rows[0])
+  } catch (err) {
+    res.status(500).json({ error: err.message })
+  }
+}
+
+// 1. SOLICITAR RECUPERACIÓN (Envía el correo)
+exports.solicitarRecuperacion = async (req, res) => {
+  const { email } = req.body
+  if (!email) return res.status(400).json({ error: 'Ingresa tu correo electrónico' })
+
+  try {
+    const { rows } = await pool.query(
+      'SELECT * FROM usuarios WHERE LOWER(email) = LOWER($1) AND activo = TRUE',
+      [email.trim()]
+    )
+    const usuario = rows[0]
+
+    if (!usuario) {
+      return res.json({ message: 'Si el correo existe en el sistema, recibirás un enlace de recuperación.' })
+    }
+
+    // Generar token único y expiración en 1 hora
+    const resetToken = crypto.randomBytes(32).toString('hex')
+    const resetExpires = new Date(Date.now() + 3600000)
+
+    await pool.query(
+      'UPDATE usuarios SET reset_token = $1, reset_token_expires = $2 WHERE id = $3',
+      [resetToken, resetExpires, usuario.id]
+    )
+
+    const resetUrl = `${process.env.FRONTEND_URL}/reset-password?token=${resetToken}`
+
+    const msg = {
+      to: usuario.email,
+      from: process.env.EMAIL_FROM,
+      subject: 'AUTOSPORT — Restablecer contraseña',
+      html: `
+        <div style="font-family: Arial, sans-serif; background-color: #0a0a0a; color: #f5f5f5; padding: 20px; border-radius: 8px;">
+          <h2 style="color: #f97316;">AUTOSPORT</h2>
+          <p>Hola <strong>${usuario.nombre}</strong>,</p>
+          <p>Has solicitado restablecer tu contraseña para ingresar al sistema de inventario.</p>
+          <p>Haz clic en el siguiente botón para crear una nueva clave (este enlace vence en 1 hora):</p>
+          <a href="${resetUrl}" style="display: inline-block; background-color: #f97316; color: #ffffff; padding: 12px 24px; text-decoration: none; border-radius: 6px; font-weight: bold; margin: 15px 0;">Restablecer Contraseña</a>
+          <p style="font-size: 12px; color: #9ca3af;">Si no solicitaste este cambio, puedes ignorar este correo.</p>
+        </div>
+      `,
+    }
+
+    await sgMail.send(msg)
+    res.json({ message: 'Si el correo existe en el sistema, recibirás un enlace de recuperación.' })
+  } catch (err) {
+    console.error('Error SendGrid:', err)
+    res.status(500).json({ error: 'Error al enviar el correo de recuperación' })
+  }
+}
+
+// 2. RESTABLECER CONTRASEÑA (Recibe el token y la nueva clave)
+exports.restablecerPassword = async (req, res) => {
+  const { token, password } = req.body
+
+  if (!token || !password) {
+    return res.status(400).json({ error: 'Token y nueva contraseña requeridos' })
+  }
+
+  if (password.length < 6) {
+    return res.status(400).json({ error: 'La contraseña debe tener al menos 6 caracteres' })
+  }
+
+  try {
+    const { rows } = await pool.query(
+      'SELECT * FROM usuarios WHERE reset_token = $1 AND reset_token_expires > NOW() AND activo = TRUE',
+      [token]
+    )
+    const usuario = rows[0]
+
+    if (!usuario) {
+      return res.status(400).json({ error: 'El enlace es inválido o ha expirado.' })
+    }
+
+    const hashedPassword = await bcrypt.hash(password, 10)
+
+    await pool.query(
+      'UPDATE usuarios SET password = $1, reset_token = NULL, reset_token_expires = NULL WHERE id = $2',
+      [hashedPassword, usuario.id]
+    )
+
+    res.json({ message: 'Contraseña actualizada correctamente. Ya puedes iniciar sesión.' })
   } catch (err) {
     res.status(500).json({ error: err.message })
   }
