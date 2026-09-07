@@ -191,12 +191,12 @@ export default function ScanView() {
                         {m.tipo === "ingreso" ? "▲ +" : "▼ - "}{m.cantidad} un.
                       </span>
                       <span className="scan-movimiento-card__usuario">
-                        👤 {m.usuario || "Usuario"}
+                        {m.usuario || "Usuario"}
                       </span>
                     </div>
                     <div className="scan-movimiento-card__details">
                       <span className="scan-movimiento-card__fecha">
-                        🕒 {new Date(m.created_at).toLocaleString("es-EC", {
+                        {new Date(m.created_at).toLocaleString("es-EC", {
                           dateStyle: "short",
                           timeStyle: "short",
                         })}
