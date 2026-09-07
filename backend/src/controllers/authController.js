@@ -17,11 +17,12 @@ const generarToken = (usuario) =>
 
 const intentos = {}
 
+// INICIAR SESIÓN (Acepta Username o Email)
 exports.login = async (req, res) => {
   const { email, password } = req.body
   if (!email || !password) return res.status(400).json({ error: 'Credenciales requeridas' })
 
-  const key = email.trim().toLowerCase()
+  const key = String(email).trim().toLowerCase()
   const passLimpia = String(password).trim()
   const ahora = Date.now()
 
@@ -34,23 +35,23 @@ exports.login = async (req, res) => {
   }
 
   try {
+    // Busca coincidencia exacta en email O en nombre de usuario
     const { rows } = await pool.query(
       `SELECT * FROM usuarios 
-       WHERE (LOWER(email) = LOWER($1) OR LOWER(nombre) = LOWER($1)) AND activo = TRUE 
-       ORDER BY created_at DESC LIMIT 1`,
+       WHERE (LOWER(TRIM(email)) = $1 OR LOWER(TRIM(nombre)) = $1) 
+         AND activo = TRUE 
+       LIMIT 1`,
       [key]
     )
-    const usuario = rows[0]
 
-    if (!usuario) {
-      console.log(`[LOGIN FAIL] Usuario no encontrado: ${key}`)
+    if (rows.length === 0) {
       return res.status(401).json({ error: 'Credenciales inválidas' })
     }
 
+    const usuario = rows[0]
     const valido = await bcrypt.compare(passLimpia, usuario.password)
 
     if (!valido) {
-      console.log(`[LOGIN FAIL] Contraseña incorrecta para el usuario ID: ${usuario.id}`)
       if (!intentos[key]) intentos[key] = { count: 0 }
       intentos[key].count++
       if (intentos[key].count >= 5) {
@@ -82,19 +83,26 @@ exports.me = async (req, res) => {
   }
 }
 
+// SOLICITAR RECUPERACIÓN (Acepta Username o Email)
 exports.solicitarRecuperacion = async (req, res) => {
   const { email } = req.body
-  if (!email) return res.status(400).json({ error: 'Ingresa tu correo electrónico' })
+  if (!email) return res.status(400).json({ error: 'Ingresa tu usuario o correo electrónico' })
+
+  const key = String(email).trim().toLowerCase()
 
   try {
+    // Permite buscar por email o por nombre de usuario para enviar el correo registrado
     const { rows } = await pool.query(
-      'SELECT * FROM usuarios WHERE LOWER(email) = LOWER($1) AND activo = TRUE',
-      [email.trim()]
+      `SELECT * FROM usuarios 
+       WHERE (LOWER(TRIM(email)) = $1 OR LOWER(TRIM(nombre)) = $1) 
+         AND activo = TRUE 
+       LIMIT 1`,
+      [key]
     )
     const usuario = rows[0]
 
     if (!usuario) {
-      return res.json({ message: 'Si el correo existe en el sistema, recibirás un enlace de recuperación.' })
+      return res.json({ message: 'Si el usuario existe en el sistema, recibirá un enlace de recuperación.' })
     }
 
     const resetToken = crypto.randomBytes(32).toString('hex')
@@ -124,13 +132,14 @@ exports.solicitarRecuperacion = async (req, res) => {
     }
 
     await sgMail.send(msg)
-    res.json({ message: 'Si el correo existe en el sistema, recibirás un enlace de recuperación.' })
+    res.json({ message: 'Si el usuario existe en el sistema, recibirá un enlace de recuperación.' })
   } catch (err) {
     console.error('Error SendGrid:', err)
     res.status(500).json({ error: 'Error al enviar el correo de recuperación' })
   }
 }
 
+// RESTABLECER CONTRASEÑA
 exports.restablecerPassword = async (req, res) => {
   const { token, password } = req.body
 
@@ -162,12 +171,8 @@ exports.restablecerPassword = async (req, res) => {
       [hashedPassword, usuario.id]
     )
 
-    // Limpiar bloqueos acumulados en la memoria del servidor
-    for (const key in intentos) {
-      delete intentos[key]
-    }
+    for (const k in intentos) delete intentos[k]
 
-    console.log(`[PASSWORD RESET SUCCESS] Contraseña actualizada para usuario ID: ${usuario.id}`)
     res.json({ message: 'Contraseña actualizada correctamente. Ya puedes iniciar sesión.' })
   } catch (err) {
     console.error('[RESET ERROR]', err)
