@@ -215,6 +215,7 @@ exports.stats = async (req, res) => {
 exports.scanPublico = async (req, res) => {
   const { id } = req.params;
   try {
+    // Permite buscar tanto por ID numérico como por código REP-xxxx
     const { rows } = await pool.query(
       `SELECT r.id, r.codigo, r.nombre, r.descripcion, u.nombre AS ubicacion,
               r.precio_unitario, r.stock_actual, r.stock_minimo,
@@ -222,12 +223,28 @@ exports.scanPublico = async (req, res) => {
        FROM accesorios r
        LEFT JOIN categorias c ON r.categoria_id = c.id
        LEFT JOIN ubicaciones u ON r.ubicacion_id = u.id
-       WHERE r.id = $1 AND r.activo = TRUE`,
+       WHERE (r.id::text = $1 OR r.codigo = $1) AND r.activo = TRUE`,
       [id],
     );
+
     if (!rows[0])
       return res.status(404).json({ error: "Accesorio no encontrado" });
-    res.json(rows[0]);
+
+    // Obtener los últimos 5 movimientos registrados para este accesorio
+    const { rows: ultimosMovimientos } = await pool.query(
+      `SELECT m.id, m.tipo, m.cantidad, m.motivo, m.created_at, u.nombre AS usuario
+       FROM movimientos_stock m
+       LEFT JOIN usuarios u ON m.usuario_id = u.id
+       WHERE m.accesorio_id = $1
+       ORDER BY m.created_at DESC
+       LIMIT 5`,
+      [rows[0].id]
+    );
+
+    res.json({
+      ...rows[0],
+      ultimos_movimientos: ultimosMovimientos
+    });
   } catch (err) {
     res.status(500).json({ error: err.message });
   }
