@@ -1,15 +1,23 @@
 import { useState, useEffect } from 'react'
 import { NavLink, useNavigate, useLocation } from 'react-router-dom'
+import {
+  LayoutDashboard,
+  Package,
+  ArrowLeftRight,
+  BarChart3,
+  Users,
+  LogOut,
+} from 'lucide-react'
 import { useAuth } from '../../context/AuthContext'
 import LogoCarro from '../../pages/LogoCarro'
 import './Sidebar.css'
 
 const ICONS = {
-  '/dashboard':   '▦',
-  '/accesorios':  '⚙',
-  '/movimientos': '↕',
-  '/reportes':    '📊',
-  '/usuarios':    '👤',
+  '/dashboard':   <LayoutDashboard size={20} />,
+  '/accesorios':  <Package size={20} />,
+  '/movimientos': <ArrowLeftRight size={20} />,
+  '/reportes':    <BarChart3 size={20} />,
+  '/usuarios':    <Users size={20} />,
 }
 
 const NAV = [
@@ -74,10 +82,14 @@ export default function Sidebar() {
           )}
         </div>
         {(!collapsed || isMobile) && (
-          <button className="sidebar__logout" onClick={handleLogout}>Cerrar sesión</button>
+          <button className="sidebar__logout" onClick={handleLogout}>
+            <LogOut size={16} style={{ marginRight: '6px' }} /> Cerrar sesión
+          </button>
         )}
         {collapsed && !isMobile && (
-          <button className="sidebar__logout sidebar__logout--icon" onClick={handleLogout} title="Cerrar sesión">⏻</button>
+          <button className="sidebar__logout sidebar__logout--icon" onClick={handleLogout} title="Cerrar sesión">
+            <LogOut size={18} />
+          </button>
         )}
       </div>
     </>
