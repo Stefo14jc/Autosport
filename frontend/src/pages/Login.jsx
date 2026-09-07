@@ -1,9 +1,11 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { useNavigate, useLocation, Link } from "react-router-dom";
 import { useAuth } from "../context/AuthContext";
 import { useTheme } from "../context/ThemeContext";
-import "./Login.css";
+import api from "../api/axiosClient";
+import QRScanner from "../components/qr/QRScanner";
 import LogoCarro from "./LogoCarro";
+import "./Login.css";
 
 export default function Login() {
   const [form, setForm] = useState({ email: "", password: "" });
@@ -13,10 +15,22 @@ export default function Login() {
   const [bloqueado, setBloqueado] = useState(false);
   const [segRestantes, setSegRestantes] = useState(0);
 
+  // Estados para contador público y escáner
+  const [totalProductos, setTotalProductos] = useState(null);
+  const [scannerOpen, setScannerOpen] = useState(false);
+
   const { login } = useAuth();
   const { theme, toggleTheme } = useTheme();
   const navigate = useNavigate();
   const location = useLocation();
+
+  useEffect(() => {
+    // Cargar número total de productos en catálogo
+    api
+      .get("/accesorios/public-count")
+      .then((res) => setTotalProductos(res.data.total))
+      .catch(() => setTotalProductos(null));
+  }, []);
 
   const handleChange = (e) =>
     setForm((f) => ({ ...f, [e.target.name]: e.target.value }));
@@ -72,6 +86,11 @@ export default function Login() {
     }
   };
 
+  const handleQrScaneado = (id) => {
+    setScannerOpen(false);
+    navigate(`/scan/${id}`);
+  };
+
   return (
     <div className="login">
       <video
@@ -85,20 +104,37 @@ export default function Login() {
       <div className="login__overlay" />
 
       <div className="login__card">
-        <button className="login__theme" onClick={toggleTheme} type="button">
-          {theme === "dark" ? "Modo Claro" : "Modo Oscuro"}
-        </button>
+        <div className="login__top-bar">
+          <button className="login__theme" onClick={toggleTheme} type="button">
+            {theme === "dark" ? "Modo Claro" : "Modo Oscuro"}
+          </button>
+          
+          <button 
+            type="button" 
+            className="login__qr-btn" 
+            onClick={() => setScannerOpen(true)}
+            title="Escanear Código QR"
+          >
+            📷 Escanear QR
+          </button>
+        </div>
 
         <div className="login__brand">
           <LogoCarro
             className="login__logo-svg"
             color="#F15A24"
-            style={{ width: "260px", height: "auto", marginBottom: "8px" }}
+            style={{ width: "240px", height: "auto", marginBottom: "8px" }}
           />
           <h1 className="login__title">
             AUTO<span>SPORT</span>
           </h1>
           <p className="login__subtitle">Sistema de Gestión de Accesorios</p>
+
+          {totalProductos !== null && (
+            <div className="login__counter-badge">
+              Catálogo: <strong>{totalProductos}</strong> accesorios registrados
+            </div>
+          )}
         </div>
 
         <form className="login__form" onSubmit={handleSubmit}>
@@ -144,13 +180,11 @@ export default function Login() {
                 tabIndex="-1"
               >
                 {showPassword ? (
-                  // Ojito Abierto
                   <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
                     <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/>
                     <circle cx="12" cy="12" r="3"/>
                   </svg>
                 ) : (
-                  // Ojito Tachado
                   <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
                     <path d="M17.94 17.94A10.07 10.07 0 0 1 12 20c-7 0-11-8-11-8a18.45 18.45 0 0 1 5.06-5.94M9.9 4.24A9.12 9.12 0 0 1 12 4c7 0 11 8 11 8a18.5 18.5 0 0 1-2.16 3.19m-6.72-1.07a3 3 0 1 1-4.24-4.24"/>
                     <line x1="1" y1="1" x2="23" y2="23"/>
@@ -188,6 +222,23 @@ export default function Login() {
           </button>
         </form>
       </div>
+
+      {/* MODAL ESCÁNER QR DESDE EL LOGIN */}
+      {scannerOpen && (
+        <div className="modal-overlay" onClick={() => setScannerOpen(false)}>
+          <div className="modal" onClick={(e) => e.stopPropagation()}>
+            <div className="modal__header">
+              <h2 className="modal__title">Escanear QR de Accesorio</h2>
+              <button
+                className="modal__close"
+                onClick={() => setScannerOpen(false)}>
+                ✕
+              </button>
+            </div>
+            <QRScanner onScanned={handleQrScaneado} />
+          </div>
+        </div>
+      )}
     </div>
   );
 }
