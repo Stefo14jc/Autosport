@@ -12,6 +12,8 @@ import { useAuth } from './context/AuthContext'
 import Reportes from './pages/Reportes'
 import ScanView from './pages/ScanView'
 import LogoCarro from './pages/LogoCarro'
+import ForgotPassword from "./pages/ForgotPassword";
+import ResetPassword from "./pages/ResetPassword";
 
 function Layout() {
   const { usuario } = useAuth()
@@ -33,6 +35,8 @@ export default function App() {
             <Route path="/reportes" element={<ProtectedRoute><Reportes /></ProtectedRoute>} />
             <Route path="/usuarios" element={<ProtectedRoute roles={['admin']}><Usuarios /></ProtectedRoute>} />
             <Route path="*" element={<Navigate to="/dashboard" replace />} />
+            <Route path="/forgot-password" element={<ForgotPassword />} />
+            <Route path="/reset-password" element={<ResetPassword />} />
           </Routes>
         </BrowserRouter>
       </AuthProvider>

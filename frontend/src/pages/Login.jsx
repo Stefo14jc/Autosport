@@ -4,6 +4,7 @@ import { useAuth } from "../context/AuthContext";
 import { useTheme } from "../context/ThemeContext";
 import "./Login.css";
 import LogoCarro from "./LogoCarro";
+import { Link } from "react-router-dom";
 
 export default function Login() {
   const [form, setForm] = useState({ email: "", password: "" });
@@ -126,6 +127,17 @@ export default function Login() {
               placeholder="••••••••"
               required
             />
+            <div style={{ textAlign: "right", marginTop: "4px" }}>
+              <Link
+                to="/forgot-password"
+                style={{
+                  fontSize: "12px",
+                  color: "var(--orange)",
+                  textDecoration: "none",
+                }}>
+                ¿Olvidaste tu contraseña?
+              </Link>
+            </div>
           </div>
           {error && <p className="login__error">{error}</p>}
           <button
