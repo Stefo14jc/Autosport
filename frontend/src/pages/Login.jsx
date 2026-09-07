@@ -1,13 +1,13 @@
 import { useState } from "react";
-import { useNavigate, useLocation } from "react-router-dom";
+import { useNavigate, useLocation, Link } from "react-router-dom";
 import { useAuth } from "../context/AuthContext";
 import { useTheme } from "../context/ThemeContext";
 import "./Login.css";
 import LogoCarro from "./LogoCarro";
-import { Link } from "react-router-dom";
 
 export default function Login() {
   const [form, setForm] = useState({ email: "", password: "" });
+  const [showPassword, setShowPassword] = useState(false);
   const [error, setError] = useState("");
   const [loading, setLoading] = useState(false);
   const [bloqueado, setBloqueado] = useState(false);
@@ -21,7 +21,7 @@ export default function Login() {
   const handleChange = (e) =>
     setForm((f) => ({ ...f, [e.target.name]: e.target.value }));
 
-  const handleSubmit = async (e, emailToAuth, passwordToAuth) => {
+  const handleSubmit = async (e) => {
     if (e) {
       e.preventDefault();
       e.stopPropagation();
@@ -29,11 +29,10 @@ export default function Login() {
     setLoading(true);
     setError("");
     try {
-      await login(emailToAuth || form.email, passwordToAuth || form.password);
+      await login(form.email, form.password);
       const from = location.state?.from || "/dashboard";
       navigate(from);
     } catch (err) {
-      // --- INTEGRACIÓN OFFLINE ---
       if (!navigator.onLine) {
         const userCached = localStorage.getItem("as_user");
         const tokenCached = localStorage.getItem("as_token");
@@ -43,13 +42,12 @@ export default function Login() {
           return;
         } else {
           setError(
-            "Sin conexión y sin sesión previa guardada. Conéctate a internet para ingresar.",
+            "Sin conexión y sin sesión previa guardada. Conéctate a internet para ingresar."
           );
           setLoading(false);
           return;
         }
       }
-      // --- FIN INTEGRACIÓN OFFLINE ---
 
       if (err.response?.status === 429) {
         setBloqueado(true);
@@ -66,7 +64,7 @@ export default function Login() {
       }
       setError(
         err.response?.data?.error ||
-          "Error de autenticación: Credenciales inválidas",
+          "Error de autenticación: Credenciales inválidas"
       );
       setForm({ email: "", password: "" });
     } finally {
@@ -103,9 +101,7 @@ export default function Login() {
           <p className="login__subtitle">Sistema de Gestión de Accesorios</p>
         </div>
 
-        <form
-          className="login__form"
-          onSubmit={(e) => handleSubmit(e, form.email, form.password)}>
+        <form className="login__form" onSubmit={handleSubmit}>
           <div className="login__field">
             <label>Usuario o Email</label>
             <input
@@ -117,33 +113,73 @@ export default function Login() {
               required
             />
           </div>
+
           <div className="login__field">
             <label>Contraseña</label>
-            <input
-              name="password"
-              type="password"
-              value={form.password}
-              onChange={handleChange}
-              placeholder="••••••••"
-              required
-            />
-            <div style={{ textAlign: "right", marginTop: "4px" }}>
+            <div style={{ position: "relative", display: "flex", alignItems: "center" }}>
+              <input
+                name="password"
+                type={showPassword ? "text" : "password"}
+                value={form.password}
+                onChange={handleChange}
+                placeholder="••••••••"
+                required
+                style={{ width: "100%", paddingRight: "40px" }}
+              />
+              <button
+                type="button"
+                onClick={() => setShowPassword(!showPassword)}
+                style={{
+                  position: "absolute",
+                  right: "10px",
+                  background: "none",
+                  border: "none",
+                  cursor: "pointer",
+                  color: "var(--text-muted)",
+                  display: "flex",
+                  alignItems: "center",
+                  justifyContent: "center",
+                  padding: "4px"
+                }}
+                tabIndex="-1"
+              >
+                {showPassword ? (
+                  // Ojito Abierto
+                  <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                    <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/>
+                    <circle cx="12" cy="12" r="3"/>
+                  </svg>
+                ) : (
+                  // Ojito Tachado
+                  <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                    <path d="M17.94 17.94A10.07 10.07 0 0 1 12 20c-7 0-11-8-11-8a18.45 18.45 0 0 1 5.06-5.94M9.9 4.24A9.12 9.12 0 0 1 12 4c7 0 11 8 11 8a18.5 18.5 0 0 1-2.16 3.19m-6.72-1.07a3 3 0 1 1-4.24-4.24"/>
+                    <line x1="1" y1="1" x2="23" y2="23"/>
+                  </svg>
+                )}
+              </button>
+            </div>
+
+            <div style={{ textAlign: "right", marginTop: "6px" }}>
               <Link
                 to="/forgot-password"
                 style={{
                   fontSize: "12px",
                   color: "var(--orange)",
                   textDecoration: "none",
-                }}>
+                }}
+              >
                 ¿Olvidaste tu contraseña?
               </Link>
             </div>
           </div>
+
           {error && <p className="login__error">{error}</p>}
+
           <button
             type="submit"
             className="login__submit"
-            disabled={loading || bloqueado}>
+            disabled={loading || bloqueado}
+          >
             {bloqueado
               ? `Bloqueado ${segRestantes}s`
               : loading

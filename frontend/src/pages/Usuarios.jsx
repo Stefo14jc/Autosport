@@ -13,6 +13,7 @@ export default function Usuarios() {
   const [editando, setEditando] = useState(null)
   const [error, setError]       = useState('')
   const [saving, setSaving]     = useState(false)
+  const [showPassword, setShowPassword] = useState(false)
 
   const fetchUsuarios = async () => {
     setLoading(true)
@@ -22,10 +23,10 @@ export default function Usuarios() {
 
   useEffect(() => { fetchUsuarios() }, [])
 
-  const abrirCrear  = () => { setForm(EMPTY); setEditando(null); setError(''); setModal(true) }
+  const abrirCrear  = () => { setForm(EMPTY); setEditando(null); setError(''); setShowPassword(false); setModal(true) }
   const abrirEditar = (u) => {
     setForm({ nombre: u.nombre, email: u.email, password: '', rol: u.rol })
-    setEditando(u.id); setError(''); setModal(true)
+    setEditando(u.id); setError(''); setShowPassword(false); setModal(true)
   }
 
   const handleChange = e => setForm(f => ({ ...f, [e.target.name]: e.target.value }))
@@ -130,11 +131,46 @@ export default function Usuarios() {
 
               <div className="form-field">
                 <label>{editando ? 'Nueva contraseña (opcional)' : 'Contraseña'}</label>
-                <input
-                  name="password" type="password"
-                  value={form.password} onChange={handleChange}
-                  minLength={6} placeholder="Mínimo 6 caracteres"
-                />
+                <div style={{ position: 'relative', display: 'flex', alignItems: 'center' }}>
+                  <input
+                    name="password"
+                    type={showPassword ? 'text' : 'password'}
+                    value={form.password}
+                    onChange={handleChange}
+                    minLength={6}
+                    placeholder="Mínimo 6 caracteres"
+                    style={{ width: '100%', paddingRight: '40px' }}
+                  />
+                  <button
+                    type="button"
+                    onClick={() => setShowPassword(!showPassword)}
+                    style={{
+                      position: 'absolute',
+                      right: '10px',
+                      background: 'none',
+                      border: 'none',
+                      cursor: 'pointer',
+                      color: 'var(--text-muted)',
+                      display: 'flex',
+                      alignItems: 'center',
+                      justifyContent: 'center',
+                      padding: '4px'
+                    }}
+                    tabIndex="-1"
+                  >
+                    {showPassword ? (
+                      <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                        <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/>
+                        <circle cx="12" cy="12" r="3"/>
+                      </svg>
+                    ) : (
+                      <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                        <path d="M17.94 17.94A10.07 10.07 0 0 1 12 20c-7 0-11-8-11-8a18.45 18.45 0 0 1 5.06-5.94M9.9 4.24A9.12 9.12 0 0 1 12 4c7 0 11 8 11 8a18.5 18.5 0 0 1-2.16 3.19m-6.72-1.07a3 3 0 1 1-4.24-4.24"/>
+                        <line x1="1" y1="1" x2="23" y2="23"/>
+                      </svg>
+                    )}
+                  </button>
+                </div>
                 {form.password && form.password.length < 6 && (
                   <span style={{ fontSize: '12px', color: 'var(--red)', marginTop: '4px', display: 'block' }}>
                     Mínimo 6 caracteres ({form.password.length}/6)
