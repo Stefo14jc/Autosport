@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import { useNavigate, useLocation, Link } from "react-router-dom";
+import { useNavigate, Link } from "react-router-dom";
 import { useAuth } from "../context/AuthContext";
 import { useTheme } from "../context/ThemeContext";
 import api from "../api/axiosClient";
@@ -13,17 +13,20 @@ export default function Login() {
   const [loading, setLoading] = useState(false);
   const [bloqueado, setBloqueado] = useState(false);
   const [segRestantes, setSegRestantes] = useState(0);
-
-  // Estado para el contador público de accesorios
   const [totalProductos, setTotalProductos] = useState(null);
 
-  const { login } = useAuth();
+  const { usuario, login } = useAuth();
   const { theme, toggleTheme } = useTheme();
   const navigate = useNavigate();
-  const location = useLocation();
+
+  // Si ya tiene sesión activa e intenta entrar a /login, redirigir directo al Dashboard
+  useEffect(() => {
+    if (usuario) {
+      navigate('/dashboard', { replace: true });
+    }
+  }, [usuario, navigate]);
 
   useEffect(() => {
-    // Consulta pública del total de repuestos/accesorios
     api
       .get("/accesorios/public-count")
       .then((res) => setTotalProductos(res.data.total))
@@ -42,15 +45,14 @@ export default function Login() {
     setError("");
     try {
       await login(form.email, form.password);
-      const from = location.state?.from || "/dashboard";
-      navigate(from);
+      // Siempre redirigir al Dashboard tras iniciar sesión
+      navigate('/dashboard', { replace: true });
     } catch (err) {
       if (!navigator.onLine) {
         const userCached = localStorage.getItem("as_user");
         const tokenCached = localStorage.getItem("as_token");
         if (userCached && tokenCached) {
-          const from = location.state?.from || "/dashboard";
-          navigate(from);
+          navigate('/dashboard', { replace: true });
           return;
         } else {
           setError(
@@ -116,7 +118,7 @@ export default function Login() {
 
           {totalProductos !== null && (
             <div className="login__counter-badge">
-              📦 Catálogo: <strong>{totalProductos}</strong> accesorios registrados
+              Catálogo: <strong>{totalProductos}</strong> accesorios registrados
             </div>
           )}
         </div>

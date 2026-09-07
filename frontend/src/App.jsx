@@ -1,5 +1,5 @@
-import { BrowserRouter, Routes, Route, Navigate } from 'react-router-dom'
-import { AuthProvider } from './context/AuthContext'
+import { BrowserRouter, Routes, Route, Navigate, useLocation } from 'react-router-dom'
+import { AuthProvider, useAuth } from './context/AuthContext'
 import { ThemeProvider } from './context/ThemeContext'
 import ProtectedRoute from './components/layout/ProtectedRoute'
 import Sidebar from './components/layout/Sidebar'
@@ -8,16 +8,22 @@ import Dashboard from './pages/Dashboard'
 import Accesorios from './pages/Accesorios'
 import Movimientos from './pages/Movimientos'
 import Usuarios from './pages/Usuarios'
-import { useAuth } from './context/AuthContext'
 import Reportes from './pages/Reportes'
 import ScanView from './pages/ScanView'
-import LogoCarro from './pages/LogoCarro'
 import ForgotPassword from "./pages/ForgotPassword";
 import ResetPassword from "./pages/ResetPassword";
 
 function Layout() {
   const { usuario } = useAuth()
-  return usuario ? <Sidebar /> : null
+  const location = useLocation()
+  
+  // Ocultar el Sidebar en rutas de autenticación
+  const rutasSinSidebar = ['/login', '/forgot-password', '/reset-password']
+  if (!usuario || rutasSinSidebar.includes(location.pathname)) {
+    return null
+  }
+  
+  return <Sidebar />
 }
 
 export default function App() {
@@ -28,15 +34,15 @@ export default function App() {
           <Layout />
           <Routes>
             <Route path="/login" element={<Login />} />
-            <Route path="/accesorios/scan/:id" element={<ProtectedRoute><ScanView /></ProtectedRoute>} />
+            <Route path="/accesorios/scan/:id" element={<ScanView />} />
             <Route path="/dashboard" element={<ProtectedRoute><Dashboard /></ProtectedRoute>} />
             <Route path="/accesorios" element={<ProtectedRoute><Accesorios /></ProtectedRoute>} />
             <Route path="/movimientos" element={<ProtectedRoute><Movimientos /></ProtectedRoute>} />
             <Route path="/reportes" element={<ProtectedRoute><Reportes /></ProtectedRoute>} />
             <Route path="/usuarios" element={<ProtectedRoute roles={['admin']}><Usuarios /></ProtectedRoute>} />
-            <Route path="*" element={<Navigate to="/dashboard" replace />} />
             <Route path="/forgot-password" element={<ForgotPassword />} />
             <Route path="/reset-password" element={<ResetPassword />} />
+            <Route path="*" element={<Navigate to="/dashboard" replace />} />
           </Routes>
         </BrowserRouter>
       </AuthProvider>
