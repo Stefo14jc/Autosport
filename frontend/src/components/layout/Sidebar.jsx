@@ -5,8 +5,11 @@ import {
   Package,
   ArrowLeftRight,
   BarChart3,
+  Tags,
   Users,
   LogOut,
+  Menu,
+  X
 } from 'lucide-react'
 import { useAuth } from '../../context/AuthContext'
 import LogoCarro from '../../pages/LogoCarro'
@@ -17,6 +20,7 @@ const ICONS = {
   '/accesorios':  <Package size={20} />,
   '/movimientos': <ArrowLeftRight size={20} />,
   '/reportes':    <BarChart3 size={20} />,
+  '/catalogos':   <Tags size={20} />,
   '/usuarios':    <Users size={20} />,
 }
 
@@ -25,6 +29,7 @@ const NAV = [
   { to: '/accesorios',  label: 'Accesorios',  roles: ['admin', 'bodeguero'] },
   { to: '/movimientos', label: 'Movimientos', roles: ['admin', 'bodeguero'] },
   { to: '/reportes',    label: 'Reportes',    roles: ['admin', 'bodeguero'] },
+  { to: '/catalogos',   label: 'Catálogos',   roles: ['admin'] },
   { to: '/usuarios',    label: 'Usuarios',    roles: ['admin'] },
 ]
 
@@ -102,7 +107,9 @@ export default function Sidebar() {
           <LogoCarro style={{ width: '42px', height: 'auto' }} />
           <span className="sidebar__title">AUTO<span>SPORT</span></span>
         </div>
-        <button className="mobile-header__hamburger" onClick={() => setOpen(true)} aria-label="Abrir menú">☰</button>
+        <button className="mobile-header__hamburger" onClick={() => setOpen(true)} aria-label="Abrir menú">
+          <Menu size={22} />
+        </button>
       </header>
 
       <aside className={`sidebar sidebar--desktop${collapsed ? ' sidebar--collapsed' : ''}`}>
@@ -112,7 +119,9 @@ export default function Sidebar() {
       {open && <div className="sidebar-overlay" onClick={() => setOpen(false)} />}
 
       <aside className={`sidebar sidebar--mobile${open ? ' sidebar--mobile-open' : ''}`}>
-        <button className="sidebar__close" onClick={() => setOpen(false)}>✕</button>
+        <button className="sidebar__close" onClick={() => setOpen(false)} aria-label="Cerrar menú">
+          <X size={24} />
+        </button>
         {sidebarContent(true)}
       </aside>
     </>

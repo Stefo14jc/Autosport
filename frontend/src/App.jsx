@@ -12,7 +12,7 @@ import Reportes from './pages/Reportes'
 import ScanView from './pages/ScanView'
 import ForgotPassword from "./pages/ForgotPassword";
 import ResetPassword from "./pages/ResetPassword";
-
+import Catalogos from './pages/Catalogos'
 function Layout() {
   const { usuario } = useAuth()
   const location = useLocation()
@@ -42,6 +42,7 @@ export default function App() {
             <Route path="/usuarios" element={<ProtectedRoute roles={['admin']}><Usuarios /></ProtectedRoute>} />
             <Route path="/forgot-password" element={<ForgotPassword />} />
             <Route path="/reset-password" element={<ResetPassword />} />
+            <Route path="/catalogos" element={<ProtectedRoute><Catalogos /></ProtectedRoute>} />
             <Route path="*" element={<Navigate to="/dashboard" replace />} />
           </Routes>
         </BrowserRouter>
