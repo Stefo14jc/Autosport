@@ -8,8 +8,8 @@ const authRoutes        = require('./routes/authRoutes')
 const usuariosRoutes    = require('./routes/usuariosRoutes')
 const accesoriosRoutes   = require('./routes/accesoriosRoutes')
 const movimientosRoutes = require('./routes/movimientosRoutes')
-const ubicacionesRoutes = require('./routes/ubicacionesRoutes')
-const categoriasRoutes = require('./routes/categoriasRoutes')
+const catalogosRoutes   = require('./routes/catalogosRoutes')
+
 const app = express()
 
 app.use(helmet())
@@ -25,12 +25,13 @@ app.use(cors({
 app.use(morgan('dev'))
 app.use(express.json())
 
-app.use('/api/auth',         authRoutes)
-app.use('/api/usuarios',     usuariosRoutes)
-app.use('/api/accesorios',    accesoriosRoutes)
-app.use('/api/movimientos',  movimientosRoutes)
-app.use('/api/ubicaciones',  ubicacionesRoutes)
-app.use('/api/categorias', categoriasRoutes)
+app.use('/api/auth',        authRoutes)
+app.use('/api/usuarios',    usuariosRoutes)
+app.use('/api/accesorios',   accesoriosRoutes)
+app.use('/api/movimientos', movimientosRoutes)
+
+// Rutas de Catálogos (Categorías y Ubicaciones con GET, POST, PUT, DELETE)
+app.use('/api',             catalogosRoutes)
 
 app.use((err, req, res, next) => {
   console.error(err.stack)
